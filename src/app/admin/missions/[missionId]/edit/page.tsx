@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { updateMissionAction } from "@/app/actions/admin";
+import { AdminShell } from "@/components/AdminShell";
 import { Field, RpgButton, RpgLink, RpgWindow, Select, TextArea, TextInput } from "@/components/Rpg";
 import { requireAdmin } from "@/lib/auth";
 import { parseJsonList } from "@/lib/domain";
@@ -16,14 +17,12 @@ export default async function EditMissionPage({
   if (!mission) notFound();
 
   return (
-    <main className="rpg-shell grid gap-6">
-      <header className="rpg-hero grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <p className="text-sm font-bold text-yellow-300">Edit Mission</p>
-          <h1 className="rpg-title text-4xl md:text-6xl">{mission.title}</h1>
-        </div>
-        <RpgLink href="/admin">ダッシュボードへ戻る</RpgLink>
-      </header>
+    <AdminShell
+      active="missions"
+      actions={<RpgLink href="/admin/missions">一覧へ</RpgLink>}
+      description="ミッションの問題文、選択肢、正解、解説を編集します。"
+      title={mission.title}
+    >
       <RpgWindow title="Mission Sheet">
         <form action={updateMissionAction} className="grid gap-4 md:grid-cols-2">
           <input type="hidden" name="id" value={mission.id} />
@@ -78,6 +77,6 @@ export default async function EditMissionPage({
           </div>
         </form>
       </RpgWindow>
-    </main>
+    </AdminShell>
   );
 }

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { submitAnswerAction } from "@/app/actions/student";
 import { RpgButton, RpgLink, RpgWindow } from "@/components/Rpg";
-import { parseJsonList, scoreParticipant } from "@/lib/domain";
+import { parseJsonList, scoreParticipant, shuffleListBySeed } from "@/lib/domain";
 import { prisma } from "@/lib/prisma";
 
 function participantCookieName(sessionId: string) {
@@ -58,47 +58,78 @@ export default async function PlayPage({
   const response = session.responses.find(
     (existing) => existing.missionId === item.missionId
   );
-  const choices = parseJsonList(item.mission.choicesJson);
+  const choices = shuffleListBySeed(
+    parseJsonList(item.mission.choicesJson),
+    `${sessionId}:${participantId}:${item.missionId}`
+  );
   const missionIndex =
     session.quest.items.findIndex((questItem) => questItem.id === item.id) + 1;
+  const totalMissions = session.quest.items.length;
+  const answeredCount = session.responses.length;
+  const remainingCount = Math.max(0, totalMissions - answeredCount);
+  const progressPercent =
+    totalMissions === 0 ? 0 : Math.round((answeredCount / totalMissions) * 100);
   const currentScore = scoreParticipant({
     participant: session.participants[0],
     responses: session.responses,
     quest: session.quest
   });
-  const isLastMission = missionIndex >= session.quest.items.length;
+  const isLastMission = missionIndex >= totalMissions;
 
   return (
-    <main className="rpg-shell grid gap-6">
-      <header className="rpg-hero grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <p className="text-sm font-bold text-yellow-300">{session.quest.title}</p>
-          <h1 className="rpg-title text-4xl md:text-6xl">Mission {missionIndex}</h1>
-          <p className="mt-3 text-slate-200">
-            残り {Math.max(0, session.quest.items.length - session.responses.length)} 問
-          </p>
+    <main className="rpg-shell student-quest student-play-page grid gap-6">
+      <header className="rpg-hero student-hero student-play-hero">
+        <div className="student-hero-copy">
+          <p className="student-badge">{session.quest.title}</p>
+          <h1 className="rpg-title student-section-title">Mission {missionIndex}</h1>
+          <p className="student-lead">残り {remainingCount} 問</p>
         </div>
-        <RpgWindow title="Status" className="min-w-56">
-          <dl className="grid gap-2 text-sm">
-            <div className="flex justify-between gap-3">
-              <dt>スコア</dt>
-              <dd className="font-bold text-yellow-300">{currentScore.totalScore}</dd>
+
+        <aside className="student-status-panel" aria-label="現在のステータス">
+          <div className="student-stat-grid">
+            <div className="student-stat-card">
+              <span className="student-stat-label">Score</span>
+              <strong className="student-stat-value student-stat-accent">
+                {currentScore.totalScore}
+              </strong>
             </div>
-            <div className="flex justify-between gap-3">
-              <dt>進捗</dt>
-              <dd>
-                {session.responses.length}/{session.quest.items.length}
-              </dd>
+            <div className="student-stat-card">
+              <span className="student-stat-label">Progress</span>
+              <strong className="student-stat-value">
+                {answeredCount}/{totalMissions}
+              </strong>
             </div>
-          </dl>
-        </RpgWindow>
+          </div>
+          <div className="student-progress-block">
+            <div className="student-progress-meta">
+              <span>クエスト進捗</span>
+              <span>{progressPercent}%</span>
+            </div>
+            <div
+              className="student-progress"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPercent}
+            >
+              <span
+                className="student-progress-bar"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        </aside>
       </header>
 
-      <RpgWindow title={`Mission ${missionIndex}`}>
+      <RpgWindow className="student-mission-card">
         <div className="grid gap-5">
-          <div>
-            <p className="mt-4 whitespace-pre-wrap text-lg leading-8">{item.mission.prompt}</p>
+          <div className="student-mission-header">
+            <span className="student-step-token">Q{missionIndex}</span>
+            <p className="student-mission-title">{item.mission.title}</p>
           </div>
+
+          <p className="student-prompt whitespace-pre-wrap">{item.mission.prompt}</p>
+
           {item.mission.codeSnippet ? (
             <pre className="rpg-code">
               <code>{item.mission.codeSnippet}</code>
@@ -107,14 +138,27 @@ export default async function PlayPage({
 
           {response ? (
             <div className="grid gap-4">
-              <RpgWindow title={response.isCorrect ? "Clear" : "Check"}>
-                <p className={response.isCorrect ? "text-green-300" : "text-rose-300"}>
-                  {response.isCorrect ? "正解です！" : "今回は不正解です。"}
+              <div
+                className={`student-feedback ${
+                  response.isCorrect ? "student-feedback-correct" : "student-feedback-wrong"
+                }`}
+              >
+                <p className="student-feedback-title">
+                  {response.isCorrect ? "Clear! 正解です" : "Check! 今回は不正解です"}
                 </p>
-                <p className="mt-2 text-sm text-slate-300">あなたの回答: {response.answer}</p>
-                <p className="mt-2 text-sm text-yellow-300">正解: {item.mission.correctAnswer}</p>
-                <p className="mt-4 leading-7">{item.mission.explanation}</p>
-              </RpgWindow>
+                <dl className="student-answer-summary">
+                  <div>
+                    <dt>あなたの回答</dt>
+                    <dd>{response.answer}</dd>
+                  </div>
+                  <div>
+                    <dt>正解</dt>
+                    <dd>{item.mission.correctAnswer}</dd>
+                  </div>
+                </dl>
+                <p className="leading-7">{item.mission.explanation}</p>
+              </div>
+
               <div className="flex flex-wrap gap-3">
                 {isLastMission ? (
                   <RpgLink href={`/result/${sessionId}`}>結果へ進む</RpgLink>
@@ -128,14 +172,14 @@ export default async function PlayPage({
               <input type="hidden" name="sessionId" value={sessionId} />
               <input type="hidden" name="missionId" value={item.missionId} />
               <input type="hidden" name="startedAt" value={Date.now()} />
-              <div className="grid gap-3">
-                {choices.map((choice) => (
-                  <label
-                    className="grid cursor-pointer grid-cols-[auto_1fr] gap-3 border-2 border-white bg-slate-950 p-4 hover:bg-yellow-300 hover:text-slate-950"
-                    key={choice}
-                  >
+              <div className="student-choice-grid">
+                {choices.map((choice, index) => (
+                  <label className="student-choice" key={choice}>
                     <input name="answer" type="radio" value={choice} required />
-                    <span className="font-bold">{choice}</span>
+                    <span className="student-choice-marker">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span className="student-choice-text">{choice}</span>
                   </label>
                 ))}
               </div>

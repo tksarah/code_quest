@@ -47,33 +47,42 @@ export default async function ResultPage({
     responses: myResponses,
     quest: session.quest
   });
+  const correctRate =
+    totalQuestions === 0 ? 0 : Math.round((result.correctCount / totalQuestions) * 100);
 
   return (
-    <main className="rpg-shell grid gap-6">
-      <header className="rpg-hero text-center">
-        <p className="text-sm font-bold text-yellow-300">Quest Clear</p>
-        <h1 className="rpg-title text-4xl md:text-6xl">Quest Clear</h1>
+    <main className="rpg-shell rpg-student-shell student-quest student-result-page grid gap-6">
+      <header className="rpg-hero student-hero student-result-hero text-center">
+        <div className="student-hero-copy">
+          <h1 className="rpg-title student-section-title">Quest Clear</h1>
+          <p className="student-lead mx-auto">{session.quest.title}</p>
+        </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-xl">
-        <RpgWindow title="Your Result" className="text-lg">
-          <dl className="grid gap-4">
-            <div className="flex justify-between gap-4">
-              <dt>スコア</dt>
-              <dd className="font-black text-yellow-300">{result.totalScore}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt>正答数</dt>
-              <dd>
-                {result.correctCount}/{totalQuestions}
-              </dd>
-            </div>
-          </dl>
-        </RpgWindow>
-      </div>
+      <RpgWindow title="Your Result" className="student-result-window">
+        <div className="student-result-grid">
+          <div className="student-stat-card">
+            <span className="student-stat-label">Score</span>
+            <strong className="student-stat-value student-result-score">
+              {result.totalScore}
+            </strong>
+          </div>
+          <div className="student-stat-card">
+            <span className="student-stat-label">正答数</span>
+            <strong className="student-stat-value">
+              {result.correctCount}/{totalQuestions}
+            </strong>
+          </div>
+          <div className="student-stat-card">
+            <span className="student-stat-label">正答率</span>
+            <strong className="student-stat-value">{correctRate}%</strong>
+          </div>
+        </div>
+      </RpgWindow>
 
-      <div className="flex justify-center">
+      <div className="student-result-actions flex flex-wrap justify-center gap-3">
         <RpgLink href="/join">Code Quest Arena ホームへ</RpgLink>
+        <RpgLink href={`/display/${sessionId}`}>Ranking Board</RpgLink>
       </div>
     </main>
   );

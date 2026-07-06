@@ -6,6 +6,7 @@ import {
   updateQuestAction,
   updateQuestItemAction
 } from "@/app/actions/admin";
+import { AdminShell } from "@/components/AdminShell";
 import { Field, RpgButton, RpgLink, RpgWindow, Select, TextArea, TextInput } from "@/components/Rpg";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -38,18 +39,12 @@ export default async function QuestDetailPage({
   if (!quest) notFound();
 
   return (
-    <main className="rpg-shell grid gap-6">
-      <header className="rpg-hero grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <p className="text-sm font-bold text-yellow-300">Quest Detail</p>
-          <h1 className="rpg-title text-4xl md:text-6xl">{quest.title}</h1>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <RpgLink href="/admin">ダッシュボードへ戻る</RpgLink>
-          <RpgLink href="/admin/quests">一覧へ</RpgLink>
-        </div>
-      </header>
-
+    <AdminShell
+      active="quests"
+      actions={<RpgLink href="/admin/quests">一覧へ</RpgLink>}
+      description="クエストの基本情報、開始、ミッション構成を管理します。"
+      title={quest.title}
+    >
       <div className="rpg-card-grid">
         <RpgWindow title="Quest Info">
           <form action={updateQuestAction} className="grid gap-4">
@@ -67,6 +62,15 @@ export default async function QuestDetailPage({
                 defaultValue={quest.maxScore}
                 min={1}
                 max={100}
+              />
+            </Field>
+            <Field label="時間ボーナス最大点（1〜50点）">
+              <TextInput
+                name="timeBonusMaxScore"
+                type="number"
+                defaultValue={quest.timeBonusMaxScore}
+                min={1}
+                max={50}
               />
             </Field>
             <Field label="制限時間（分）">
@@ -146,6 +150,6 @@ export default async function QuestDetailPage({
           {quest.items.length === 0 ? <p>まだミッションがありません。</p> : null}
         </div>
       </RpgWindow>
-    </main>
+    </AdminShell>
   );
 }

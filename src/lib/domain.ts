@@ -1,6 +1,7 @@
 import type { Participant, QuestItem, Response } from "@prisma/client";
 export type QuestScoringConfig = {
   maxScore: number;
+  timeBonusMaxScore?: number | null;
   timeLimitSeconds: number;
   items: Array<Pick<QuestItem, "missionId" | "order">>;
 };
@@ -23,6 +24,19 @@ export type RankingEntry = {
   isStalled: boolean;
 };
 
+export type ScoreSummary = {
+  averageScore: number | null;
+  minScore: number | null;
+  maxScore: number | null;
+};
+
+export type ScoreHistogramBucket = {
+  minScore: number;
+  maxScore: number;
+  count: number;
+  barPercent: number;
+};
+
 export function parseJsonList(value: string | null | undefined): string[] {
   if (!value) return [];
   try {
@@ -31,6 +45,38 @@ export function parseJsonList(value: string | null | undefined): string[] {
   } catch {
     return [];
   }
+}
+
+function hashSeed(seed: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function seededRandom(seed: string): () => number {
+  let state = hashSeed(seed) || 0x9e3779b9;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export function shuffleListBySeed<T>(values: readonly T[], seed: string): T[] {
+  const shuffled = [...values];
+  const random = seededRandom(seed);
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
 }
 
 export function stringifyList(values: string[]): string {
@@ -54,6 +100,11 @@ export function normalizeQuestTimeLimitSeconds(value: number): number {
   return Math.max(1, Math.trunc(value));
 }
 
+export function normalizeQuestTimeBonusMaxScore(value: number | null | undefined): number {
+  if (!Number.isFinite(value)) return 20;
+  return Math.max(1, Math.min(50, Math.trunc(Number(value))));
+}
+
 export function distributeQuestPoints(maxScore: number, totalQuestions: number): number[] {
   const safeQuestions = Math.max(0, Math.trunc(totalQuestions));
   if (safeQuestions === 0) return [];
@@ -67,6 +118,60 @@ export function distributeQuestPoints(maxScore: number, totalQuestions: number):
   );
 }
 
+export function summarizeScores(scores: number[]): ScoreSummary {
+  const validScores = scores.filter(Number.isFinite);
+  if (validScores.length === 0) {
+    return {
+      averageScore: null,
+      minScore: null,
+      maxScore: null
+    };
+  }
+
+  const total = validScores.reduce((sum, score) => sum + score, 0);
+  return {
+    averageScore: total / validScores.length,
+    minScore: Math.min(...validScores),
+    maxScore: Math.max(...validScores)
+  };
+}
+
+export function buildScoreHistogram(
+  scores: number[],
+  options: { maxScore: number; timeBonusMaxScore?: number | null; bucketSize?: number }
+): ScoreHistogramBucket[] {
+  const bucketSize = Math.max(1, Math.trunc(options.bucketSize ?? 20));
+  const validScores = scores.filter(Number.isFinite);
+  const plannedMaxScore =
+    Math.max(0, Math.trunc(options.maxScore)) +
+    normalizeQuestTimeBonusMaxScore(options.timeBonusMaxScore);
+  const observedMaxScore = validScores.length > 0 ? Math.max(...validScores) : 0;
+  const rangeMaxScore = Math.max(plannedMaxScore, observedMaxScore);
+  const bucketCount = Math.floor(rangeMaxScore / bucketSize) + 1;
+  const buckets = Array.from({ length: bucketCount }, (_value, index) => {
+    const minScore = index * bucketSize;
+    return {
+      minScore,
+      maxScore: minScore + bucketSize - 1,
+      count: 0,
+      barPercent: 0
+    };
+  });
+
+  for (const score of validScores) {
+    const bucketIndex = Math.max(0, Math.floor(score / bucketSize));
+    buckets[bucketIndex].count += 1;
+  }
+
+  const maxCount = Math.max(0, ...buckets.map((bucket) => bucket.count));
+  if (maxCount === 0) return buckets;
+
+  return buckets.map((bucket) => ({
+    ...bucket,
+    barPercent: Math.round((bucket.count / maxCount) * 100)
+  }));
+}
+
 export function questPointMap(quest: QuestScoringConfig): Map<string, number> {
   const orderedItems = [...quest.items].sort((a, b) => a.order - b.order);
   const points = distributeQuestPoints(quest.maxScore, orderedItems.length);
@@ -76,14 +181,16 @@ export function questPointMap(quest: QuestScoringConfig): Map<string, number> {
 export function calculateTimeBonus(input: {
   joinedAt: Date;
   completedAt: Date | null;
+  timeBonusMaxScore?: number | null;
   timeLimitSeconds: number;
 }): number {
   if (!input.completedAt) return 0;
 
+  const maxBonus = normalizeQuestTimeBonusMaxScore(input.timeBonusMaxScore);
   const limitMs = normalizeQuestTimeLimitSeconds(input.timeLimitSeconds) * 1000;
   const elapsedMs = Math.max(0, input.completedAt.getTime() - input.joinedAt.getTime());
   const remainingMs = Math.max(0, limitMs - elapsedMs);
-  return Math.floor((20 * remainingMs) / limitMs);
+  return Math.floor((maxBonus * remainingMs) / limitMs);
 }
 
 export function scoreParticipant(input: {
@@ -131,6 +238,7 @@ export function scoreParticipant(input: {
   const timeBonus = calculateTimeBonus({
     joinedAt: input.participant.joinedAt,
     completedAt,
+    timeBonusMaxScore: input.quest.timeBonusMaxScore,
     timeLimitSeconds: input.quest.timeLimitSeconds
   });
 

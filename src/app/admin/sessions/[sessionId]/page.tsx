@@ -3,6 +3,8 @@ import {
   deleteSessionAction,
   toggleRankingAction
 } from "@/app/actions/admin";
+import { AdminShell } from "@/components/AdminShell";
+import { CopyJoinCodeButton } from "@/components/CopyJoinCodeButton";
 import { RpgButton, RpgLink, RpgWindow } from "@/components/Rpg";
 import { requireAdmin } from "@/lib/auth";
 import { getSessionDashboard } from "@/lib/session-data";
@@ -29,20 +31,17 @@ export default async function AdminSessionPage({
   const completedCount = ranking.filter((entry) => entry.completedAt).length;
 
   return (
-    <main className="rpg-shell grid gap-6">
-      <header className="rpg-hero grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <p className="text-sm font-bold text-yellow-300">{session.quest.title}</p>
-          <h1 className="rpg-title text-4xl md:text-6xl">{session.title}</h1>
-          <p className="mt-3 text-slate-200">
-            参加コード: <strong className="text-sky-300">{session.joinCode}</strong>
-          </p>
-          <p className="mt-2 text-sm text-slate-300">
-            この画面の進捗とランキングは、この参加コードに入った学生だけで集計します。
-          </p>
-        </div>
-        <RpgLink href="/admin">ダッシュボードへ戻る</RpgLink>
-      </header>
+    <AdminShell
+      active="sessions"
+      actions={<RpgLink href="/admin#sessions">セッション一覧</RpgLink>}
+      description={
+        <>
+          {session.quest.title} / 参加コード:{" "}
+          <CopyJoinCodeButton joinCode={session.joinCode} />
+        </>
+      }
+      title={session.title}
+    >
 
       <div className="rpg-card-grid">
         <RpgWindow title="Session Status">
@@ -72,6 +71,10 @@ export default async function AdminSessionPage({
               <dd>{session.quest.maxScore}点</dd>
             </div>
             <div className="flex justify-between gap-4">
+              <dt>時間ボーナス最大点</dt>
+              <dd>{session.quest.timeBonusMaxScore}点</dd>
+            </div>
+            <div className="flex justify-between gap-4">
               <dt>制限時間</dt>
               <dd>{Math.ceil(session.quest.timeLimitSeconds / 60)}分</dd>
             </div>
@@ -89,7 +92,13 @@ export default async function AdminSessionPage({
               />
               <RpgButton>{session.showRanking ? "ランキングOFF" : "ランキングON"}</RpgButton>
             </form>
-            <RpgLink href={`/display/${session.id}`}>表示用ランキングを開く</RpgLink>
+            <RpgLink
+              href={`/display/${session.id}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              表示用ランキングを開く
+            </RpgLink>
             <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
               CSV出力
             </a>
@@ -111,7 +120,7 @@ export default async function AdminSessionPage({
         <p className="mb-4 text-sm text-slate-300">
           同じクエストでも参加コードが違えば別ランキングです。授業中はこの表で進捗と順位を逐次確認できます。
         </p>
-        <div className="overflow-x-auto">
+        <div className="admin-table-wrap">
           <table className="rpg-table">
             <thead>
               <tr>
@@ -169,7 +178,7 @@ export default async function AdminSessionPage({
       </RpgWindow>
 
       <RpgWindow title="Mission Accuracy">
-        <div className="overflow-x-auto">
+        <div className="admin-table-wrap">
           <table className="rpg-table">
             <thead>
               <tr>
@@ -196,6 +205,6 @@ export default async function AdminSessionPage({
           </table>
         </div>
       </RpgWindow>
-    </main>
+    </AdminShell>
   );
 }

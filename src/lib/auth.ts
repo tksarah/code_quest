@@ -1,6 +1,6 @@
 import "server-only";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
@@ -11,6 +11,19 @@ const SESSION_DAYS = 7;
 
 function sha256(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+async function shouldUseSecureCookie(): Promise<boolean> {
+  if (process.env.NODE_ENV !== "production") return false;
+
+  const headerStore = await headers();
+  const forwardedProto = headerStore.get("x-forwarded-proto");
+  if (forwardedProto) return forwardedProto.split(",")[0]?.trim() === "https";
+
+  const host = headerStore.get("host") ?? "";
+  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) return false;
+
+  return process.env.APP_URL?.startsWith("https://") ?? true;
 }
 
 export async function createPasswordHash(password: string): Promise<string> {
@@ -38,7 +51,7 @@ export async function createAdminSession(userId: string): Promise<void> {
   cookieStore.set(ADMIN_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await shouldUseSecureCookie(),
     path: "/",
     expires: expiresAt
   });
@@ -66,7 +79,6 @@ export async function getCurrentAdmin() {
   });
 
   if (!session || session.expiresAt < new Date() || !session.user.isActive) {
-    cookieStore.delete(ADMIN_COOKIE);
     return null;
   }
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { HTMLAttributeAnchorTarget, ReactNode } from "react";
 
 export function RpgWindow({
   children,
@@ -21,14 +21,16 @@ export function RpgWindow({
 export function RpgButton({
   children,
   className = "",
+  disabled = false,
   type = "submit"
 }: {
   children: ReactNode;
   className?: string;
+  disabled?: boolean;
   type?: "submit" | "button";
 }) {
   return (
-    <button className={`rpg-button ${className}`} type={type}>
+    <button className={`rpg-button ${className}`} disabled={disabled} type={type}>
       {children}
     </button>
   );
@@ -37,14 +39,18 @@ export function RpgButton({
 export function RpgLink({
   href,
   children,
-  className = ""
+  className = "",
+  rel,
+  target
 }: {
   href: string;
   children: ReactNode;
   className?: string;
+  rel?: string;
+  target?: HTMLAttributeAnchorTarget;
 }) {
   return (
-    <Link className={`rpg-button inline-flex ${className}`} href={href}>
+    <Link className={`rpg-button inline-flex ${className}`} href={href} rel={rel} target={target}>
       {children}
     </Link>
   );

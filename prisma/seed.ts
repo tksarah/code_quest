@@ -31,7 +31,9 @@ const seedQuestTitles = [
   "if文とループの確認クエスト",
   "コーディング基礎ミニ総復習",
   "コーディング基礎ミニ総復習（Python）",
-  "コーディング基礎ミニ総復習（PHP）"
+  "コーディング基礎ミニ総復習（PHP）",
+  "コーディング応用ミニ総復習（Python）",
+  "コーディング応用ミニ総復習（PHP）"
 ];
 
 const oldSeedMissionTitles = [
@@ -50,6 +52,17 @@ const oldSeedMissionTitles = [
   "コロン忘れ",
   "変数とは",
   "条件分岐とは"
+];
+
+const seedMissionTitleMigrations = [
+  {
+    from: "Python: 配列の値を取り出す",
+    to: "Python: リストの値を取り出す"
+  },
+  {
+    from: "PHP: 数値型の考え方",
+    to: "PHP: 整数型の考え方"
+  }
 ];
 
 const pythonMissions: MissionSeed[] = [
@@ -180,6 +193,64 @@ const pythonMissions: MissionSeed[] = [
     correctAnswer: "条件によって実行する処理を変えること",
     explanation: "if文などで条件に応じて処理の流れを変えます。",
     tags: ["python", "用語", "if"]
+  },
+  {
+    language: "python",
+    type: "concept_check",
+    title: "Python: 数値型の考え方",
+    prompt: "Pythonで計算に使う数値として最も適切な例はどれですか？",
+    choices: ["10", '"10"', '"りんご"', "True"],
+    correctAnswer: "10",
+    explanation: "10 は数値として扱われるため、足し算や比較などの計算に使えます。",
+    tags: ["python", "用語", "数値型"]
+  },
+  {
+    language: "python",
+    type: "output_prediction",
+    title: "Python: ブール値の結果",
+    prompt: "最後の result の値はどれですか？",
+    codeSnippet: "score = 80\nresult = score >= 70",
+    choices: ["True", "False", "80", "70"],
+    correctAnswer: "True",
+    explanation: "80は70以上なので、比較の結果は True になります。",
+    tags: ["python", "真偽値", "比較"]
+  },
+  {
+    language: "python",
+    type: "concept_check",
+    title: "Python: コメントの役割",
+    prompt: "Pythonで # から始まるコメントの説明として正しいものはどれですか？",
+    choices: [
+      "実行されず、コードの説明を書くために使う",
+      "必ず画面に表示される",
+      "変数を作るために使う",
+      "ループを止めるために使う"
+    ],
+    correctAnswer: "実行されず、コードの説明を書くために使う",
+    explanation: "Pythonでは # 以降はコメントとして扱われ、プログラムとしては実行されません。",
+    tags: ["python", "コメント", "用語"]
+  },
+  {
+    language: "python",
+    type: "output_prediction",
+    title: "Python: リストの値を取り出す",
+    prompt: "printで表示される値はどれですか？",
+    codeSnippet: 'items = ["red", "blue", "green"]\nprint(items[1])',
+    choices: ["red", "blue", "green", "1"],
+    correctAnswer: "blue",
+    explanation: "Pythonのリストは0番目から数えるため、items[1] は2つ目の blue です。",
+    tags: ["python", "リスト"]
+  },
+  {
+    language: "python",
+    type: "output_prediction",
+    title: "Python: 関数の戻り値",
+    prompt: "最後の answer の値はどれですか？",
+    codeSnippet: "def double(x):\n    return x * 2\n\nanswer = double(4)",
+    choices: ["2", "4", "8", "double"],
+    correctAnswer: "8",
+    explanation: "double(4) は 4 * 2 を返すため、answer は8になります。",
+    tags: ["python", "関数", "戻り値"]
   }
 ];
 
@@ -311,7 +382,218 @@ const phpMissions: MissionSeed[] = [
     correctAnswer: "条件によって実行する処理を変えること",
     explanation: "if文などで条件に応じて処理の流れを変えます。",
     tags: ["php", "用語", "if"]
+  },
+  {
+    language: "php",
+    type: "concept_check",
+    title: "PHP: 整数型の考え方",
+    prompt: "PHPで整数型の値として書かれているものはどれですか？",
+    choices: ["10", '"10"', '"りんご"', "true"],
+    correctAnswer: "10",
+    explanation:
+      '10 は引用符で囲まれていない整数リテラルです。"10" は数値に変換されることがありますが、値そのものの型は文字列です。',
+    tags: ["php", "用語", "整数型"]
+  },
+  {
+    language: "php",
+    type: "output_prediction",
+    title: "PHP: ブール値の結果",
+    prompt: "最後の $result の値はどれですか？",
+    codeSnippet: "$score = 80;\n$result = $score >= 70;",
+    choices: ["true", "false", "80", "70"],
+    correctAnswer: "true",
+    explanation: "80は70以上なので、比較の結果は true になります。",
+    tags: ["php", "真偽値", "比較"]
+  },
+  {
+    language: "php",
+    type: "concept_check",
+    title: "PHP: コメントの役割",
+    prompt: "PHPで // から始まるコメントの説明として正しいものはどれですか？",
+    choices: [
+      "実行されず、コードの説明を書くために使う",
+      "必ず画面に表示される",
+      "変数を作るために使う",
+      "ループを止めるために使う"
+    ],
+    correctAnswer: "実行されず、コードの説明を書くために使う",
+    explanation: "PHPでは // 以降はコメントとして扱われ、プログラムとしては実行されません。",
+    tags: ["php", "コメント", "用語"]
+  },
+  {
+    language: "php",
+    type: "output_prediction",
+    title: "PHP: 配列の値を取り出す",
+    prompt: "echoで表示される値はどれですか？",
+    codeSnippet: '$items = ["red", "blue", "green"];\necho $items[1];',
+    choices: ["red", "blue", "green", "1"],
+    correctAnswer: "blue",
+    explanation: "PHPの配列は0番目から数えるため、$items[1] は2つ目の blue です。",
+    tags: ["php", "配列", "array"]
+  },
+  {
+    language: "php",
+    type: "output_prediction",
+    title: "PHP: 関数の戻り値",
+    prompt: "最後の $answer の値はどれですか？",
+    codeSnippet: "function double($x) {\n    return $x * 2;\n}\n\n$answer = double(4);",
+    choices: ["2", "4", "8", "double"],
+    correctAnswer: "8",
+    explanation: "double(4) は 4 * 2 を返すため、$answer は8になります。",
+    tags: ["php", "関数", "戻り値"]
   }
+];
+
+const advancedPythonMissions: MissionSeed[] = [
+  {
+    language: "python",
+    type: "loop_logic",
+    title: "Python応用: 条件付き合計",
+    prompt: "最後の answer の値はどれですか？",
+    codeSnippet:
+      "scores = [80, 75, 95]\ntotal = 0\n\nfor score in scores:\n    if score >= 80:\n        total = total + score\n\nanswer = total",
+    choices: ["80", "175", "255", "3"],
+    correctAnswer: "175",
+    explanation: "80以上の80と95だけを合計するため、answer は175になります。",
+    tags: ["python", "リスト", "条件分岐", "ループ"],
+    difficulty: "hard"
+  },
+  {
+    language: "python",
+    type: "output_prediction",
+    title: "Python応用: 辞書と関数",
+    prompt: "最後の answer の値はどれですか？",
+    codeSnippet:
+      'items = [\n    {"name": "pen", "price": 100, "stock": 3},\n    {"name": "notebook", "price": 200, "stock": 0},\n    {"name": "bag", "price": 200, "stock": 1},\n]\n\ndef stock_total(items):\n    total = 0\n    for item in items:\n        if item["stock"] > 0:\n            total = total + item["price"] * item["stock"]\n    return total\n\nanswer = stock_total(items)',
+    choices: ["300", "450", "500", "800"],
+    correctAnswer: "500",
+    explanation:
+      "stockが1以上のpenは100*3、bagは200*1です。合計は500になります。",
+    tags: ["python", "辞書", "関数", "ループ"],
+    difficulty: "hard"
+  },
+  {
+    language: "python",
+    type: "loop_logic",
+    title: "Python応用: 文字列とリスト",
+    prompt: "最後の count の値はどれですか？",
+    codeSnippet:
+      'names = ["Alice", "Bob", "Aya", "Ken"]\ncount = 0\n\nfor name in names:\n    if name.startswith("A"):\n        count = count + 1',
+    choices: ["1", "2", "3", "Alice"],
+    correctAnswer: "2",
+    explanation: "AliceとAyaがAで始まるため、count は2になります。",
+    tags: ["python", "文字列", "リスト", "ループ"],
+    difficulty: "hard"
+  },
+  {
+    language: "python",
+    type: "loop_logic",
+    title: "Python応用: ループとbreak",
+    prompt: "最後の total の値はどれですか？",
+    codeSnippet:
+      "numbers = [4, 2, 9, 6]\ntotal = 0\n\nfor number in numbers:\n    total = total + number\n    if total >= 10:\n        break",
+    choices: ["6", "10", "15", "21"],
+    correctAnswer: "15",
+    explanation: "4、2、9の順に足して15になった時点でbreakするため、total は15です。",
+    tags: ["python", "break", "ループ", "条件分岐"],
+    difficulty: "hard"
+  },
+  {
+    language: "python",
+    type: "bug_hunt",
+    title: "Python応用: 関数のバグ探し",
+    prompt: "このコードの問題点はどれですか？",
+    codeSnippet:
+      "def find_even(numbers):\n    for number in numbers:\n        if number % 2 == 0:\n            result = number\n    return None\n\nanswer = find_even([1, 4, 7])",
+    choices: [
+      "条件を満たした時点でreturnする必要がある",
+      "for文ではリストを使えない",
+      "number % 2 は必ずエラーになる",
+      "関数には引数を書けない"
+    ],
+    correctAnswer: "条件を満たした時点でreturnする必要がある",
+    explanation:
+      "偶数を見つけても戻り値として返していないため、最後にNoneが返されます。見つけた時点でreturn numberとする必要があります。",
+    tags: ["python", "関数", "バグ", "return"],
+    difficulty: "hard"
+  }
+];
+
+const advancedPhpMissions: MissionSeed[] = [
+  {
+    language: "php",
+    type: "loop_logic",
+    title: "PHP応用: 条件付き合計",
+    prompt: "最後の $answer の値はどれですか？",
+    codeSnippet:
+      "$scores = [80, 75, 95];\n$total = 0;\n\nforeach ($scores as $score) {\n    if ($score >= 80) {\n        $total = $total + $score;\n    }\n}\n\n$answer = $total;",
+    choices: ["80", "175", "255", "3"],
+    correctAnswer: "175",
+    explanation: "80以上の80と95だけを合計するため、$answer は175になります。",
+    tags: ["php", "配列", "条件分岐", "foreach"],
+    difficulty: "hard"
+  },
+  {
+    language: "php",
+    type: "output_prediction",
+    title: "PHP応用: 連想配列と関数",
+    prompt: "最後の $answer の値はどれですか？",
+    codeSnippet:
+      '$items = [\n    ["name" => "pen", "price" => 100, "stock" => 3],\n    ["name" => "notebook", "price" => 200, "stock" => 0],\n    ["name" => "bag", "price" => 200, "stock" => 1],\n];\n\nfunction stockTotal($items) {\n    $total = 0;\n    foreach ($items as $item) {\n        if ($item["stock"] > 0) {\n            $total = $total + $item["price"] * $item["stock"];\n        }\n    }\n    return $total;\n}\n\n$answer = stockTotal($items);',
+    choices: ["300", "450", "500", "800"],
+    correctAnswer: "500",
+    explanation:
+      "stockが1以上のpenは100*3、bagは200*1です。合計は500になります。",
+    tags: ["php", "連想配列", "関数", "foreach"],
+    difficulty: "hard"
+  },
+  {
+    language: "php",
+    type: "loop_logic",
+    title: "PHP応用: 文字列と配列",
+    prompt: "最後の $count の値はどれですか？",
+    codeSnippet:
+      '$names = ["Alice", "Bob", "Aya", "Ken"];\n$count = 0;\n\nforeach ($names as $name) {\n    if (str_starts_with($name, "A")) {\n        $count = $count + 1;\n    }\n}',
+    choices: ["1", "2", "3", "Alice"],
+    correctAnswer: "2",
+    explanation: "AliceとAyaがAで始まるため、$count は2になります。",
+    tags: ["php", "文字列", "配列", "foreach"],
+    difficulty: "hard"
+  },
+  {
+    language: "php",
+    type: "loop_logic",
+    title: "PHP応用: foreachとbreak",
+    prompt: "最後の $total の値はどれですか？",
+    codeSnippet:
+      "$numbers = [4, 2, 9, 6];\n$total = 0;\n\nforeach ($numbers as $number) {\n    $total = $total + $number;\n    if ($total >= 10) {\n        break;\n    }\n}",
+    choices: ["6", "10", "15", "21"],
+    correctAnswer: "15",
+    explanation: "4、2、9の順に足して15になった時点でbreakするため、$total は15です。",
+    tags: ["php", "break", "foreach", "条件分岐"],
+    difficulty: "hard"
+  },
+  {
+    language: "php",
+    type: "output_prediction",
+    title: "PHP応用: 厳密比較の確認",
+    prompt: "最後の $result の値はどれですか？",
+    codeSnippet:
+      '$value = "10";\n\nif ($value === 10) {\n    $result = "strict";\n} elseif ($value == 10) {\n    $result = "loose";\n} else {\n    $result = "none";\n}',
+    choices: ["both", "loose", "strict", "none"],
+    correctAnswer: "loose",
+    explanation:
+      '"10" === 10 は型が違うため偽ですが、"10" == 10 は型変換されて真になります。',
+    tags: ["php", "比較", "型", "条件分岐"],
+    difficulty: "hard"
+  }
+];
+
+const allSeedMissions = [
+  ...pythonMissions,
+  ...phpMissions,
+  ...advancedPythonMissions,
+  ...advancedPhpMissions
 ];
 
 async function upsertMission(seed: MissionSeed) {
@@ -343,6 +625,22 @@ async function upsertMission(seed: MissionSeed) {
   });
 }
 
+async function migrateSeedMissionTitles() {
+  for (const migration of seedMissionTitleMigrations) {
+    const [fromMission, toMission] = await Promise.all([
+      prisma.mission.findUnique({ where: { title: migration.from }, select: { id: true } }),
+      prisma.mission.findUnique({ where: { title: migration.to }, select: { id: true } })
+    ]);
+
+    if (fromMission && !toMission) {
+      await prisma.mission.update({
+        where: { id: fromMission.id },
+        data: { title: migration.to }
+      });
+    }
+  }
+}
+
 async function upsertQuest(title: string, description: string, missionTitles: string[]) {
   const existingQuest = await prisma.quest.findUnique({
     where: { title },
@@ -352,7 +650,7 @@ async function upsertQuest(title: string, description: string, missionTitles: st
   if (existingQuest && existingQuest._count.sessions > 0) {
     await prisma.quest.update({
       where: { id: existingQuest.id },
-      data: { description, maxScore: 100, timeLimitSeconds: 600 }
+      data: { description, maxScore: 100, timeBonusMaxScore: 20, timeLimitSeconds: 600 }
     });
     return;
   }
@@ -360,10 +658,10 @@ async function upsertQuest(title: string, description: string, missionTitles: st
   const quest = existingQuest
     ? await prisma.quest.update({
         where: { id: existingQuest.id },
-        data: { description, maxScore: 100, timeLimitSeconds: 600 }
+        data: { description, maxScore: 100, timeBonusMaxScore: 20, timeLimitSeconds: 600 }
       })
     : await prisma.quest.create({
-        data: { title, description, maxScore: 100, timeLimitSeconds: 600 }
+        data: { title, description, maxScore: 100, timeBonusMaxScore: 20, timeLimitSeconds: 600 }
       });
 
   const selected = await prisma.mission.findMany({
@@ -431,22 +729,35 @@ async function main() {
     }
   });
 
+  await migrateSeedMissionTitles();
   await cleanupOldSeedData();
 
-  for (const mission of [...pythonMissions, ...phpMissions]) {
+  for (const mission of allSeedMissions) {
     await upsertMission(mission);
   }
 
   await upsertQuest(
     "コーディング基礎ミニ総復習（Python）",
-    "Pythonの変数、分岐、ループ、バグ探しをまとめて復習します。",
+    "Pythonの変数、数値型、真偽値、コメント、リスト、関数、分岐、ループ、バグ探しをまとめて復習します。",
     pythonMissions.map((mission) => mission.title)
   );
 
   await upsertQuest(
     "コーディング基礎ミニ総復習（PHP）",
-    "PHPの変数、分岐、ループ、バグ探しをまとめて復習します。",
+    "PHPの変数、整数型、真偽値、コメント、配列、関数、分岐、ループ、バグ探しをまとめて復習します。",
     phpMissions.map((mission) => mission.title)
+  );
+
+  await upsertQuest(
+    "コーディング応用ミニ総復習（Python）",
+    "Pythonのリスト、辞書、関数、条件分岐、ループ、文字列、バグ探しを組み合わせて復習します。",
+    advancedPythonMissions.map((mission) => mission.title)
+  );
+
+  await upsertQuest(
+    "コーディング応用ミニ総復習（PHP）",
+    "PHPの配列、連想配列、関数、条件分岐、foreach、型比較、バグ探しを組み合わせて復習します。",
+    advancedPhpMissions.map((mission) => mission.title)
   );
 }
 

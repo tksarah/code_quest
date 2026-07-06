@@ -2,33 +2,59 @@
 
 import { useActionState } from "react";
 import { joinSessionAction } from "@/app/actions/student";
-import { Field, RpgButton, TextInput } from "@/components/Rpg";
+import { Field, RpgButton, Select, TextInput } from "@/components/Rpg";
 
-export function JoinForm() {
+type AvailableSession = {
+  joinCode: string;
+  sessionTitle: string;
+};
+
+export function JoinForm({
+  availableSessions
+}: {
+  availableSessions: AvailableSession[];
+}) {
   const [state, formAction, pending] = useActionState(joinSessionAction, undefined);
+  const hasAvailableSessions = availableSessions.length > 0;
 
   return (
     <form action={formAction} className="grid gap-4">
       <Field label="参加コード">
-        <TextInput
+        <Select
           name="joinCode"
-          autoCapitalize="characters"
-          autoComplete="off"
-          placeholder="例: ABC123"
+          disabled={!hasAvailableSessions || pending}
           required
-        />
+        >
+          {hasAvailableSessions ? (
+            availableSessions.map((session) => (
+              <option key={session.joinCode} value={session.joinCode}>
+                {session.sessionTitle}：#{session.joinCode}
+              </option>
+            ))
+          ) : (
+            <option value="">現在参加できるクエストはありません</option>
+          )}
+        </Select>
       </Field>
-      <Field label="表示名">
+      <Field label="名前">
         <TextInput
           name="displayName"
           autoComplete="name"
+          disabled={!hasAvailableSessions || pending}
           maxLength={40}
-          placeholder="授業で呼ばれる名前"
+          placeholder="名前"
           required
         />
       </Field>
+      {!hasAvailableSessions ? (
+        <p className="text-sm font-bold text-amber-200">
+          現在参加できるクエストはありません。
+        </p>
+      ) : null}
       {state?.error ? <p className="text-sm font-bold text-rose-300">{state.error}</p> : null}
-      <RpgButton>{pending ? "参加中..." : "クエストに参加"}</RpgButton>
+      <RpgButton disabled={!hasAvailableSessions || pending}>
+        {pending ? "参加中..." : "クエストに参加"}
+      </RpgButton>
     </form>
   );
 }

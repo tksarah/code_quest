@@ -7,6 +7,7 @@ import {
   createJoinCode,
   linesToList,
   normalizeQuestMaxScore,
+  normalizeQuestTimeBonusMaxScore,
   normalizeQuestTimeLimitSeconds,
   stringifyList
 } from "@/lib/domain";
@@ -42,6 +43,10 @@ function questTimeLimitSecondsValue(formData: FormData): number {
   if (seconds !== null) return normalizeQuestTimeLimitSeconds(seconds);
   const minutes = intValue(formData, "timeLimitMinutes") ?? 10;
   return normalizeQuestTimeLimitSeconds(minutes * 60);
+}
+
+function questTimeBonusMaxScoreValue(formData: FormData): number {
+  return normalizeQuestTimeBonusMaxScore(intValue(formData, "timeBonusMaxScore") ?? 20);
 }
 
 async function uniqueJoinCode(): Promise<string> {
@@ -146,6 +151,7 @@ export async function createQuestAction(formData: FormData) {
       title,
       description: stringValue(formData, "description") || null,
       maxScore: questMaxScoreValue(formData),
+      timeBonusMaxScore: questTimeBonusMaxScoreValue(formData),
       timeLimitSeconds: questTimeLimitSecondsValue(formData)
     }
   });
@@ -171,6 +177,7 @@ export async function updateQuestAction(formData: FormData) {
       title,
       description: stringValue(formData, "description") || null,
       maxScore: questMaxScoreValue(formData),
+      timeBonusMaxScore: questTimeBonusMaxScoreValue(formData),
       timeLimitSeconds: questTimeLimitSecondsValue(formData)
     }
   });

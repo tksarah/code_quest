@@ -72,6 +72,7 @@ async function main() {
       "title" TEXT NOT NULL UNIQUE,
       "description" TEXT,
       "maxScore" INTEGER NOT NULL DEFAULT 100,
+      "timeBonusMaxScore" INTEGER NOT NULL DEFAULT 20,
       "timeLimitSeconds" INTEGER NOT NULL DEFAULT 600,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -80,6 +81,10 @@ async function main() {
 
   if (!(await columnExists("Quest", "maxScore"))) {
     await exec(`ALTER TABLE "Quest" ADD COLUMN "maxScore" INTEGER NOT NULL DEFAULT 100`);
+  }
+
+  if (!(await columnExists("Quest", "timeBonusMaxScore"))) {
+    await exec(`ALTER TABLE "Quest" ADD COLUMN "timeBonusMaxScore" INTEGER NOT NULL DEFAULT 20`);
   }
 
   if (!(await columnExists("Quest", "timeLimitSeconds"))) {

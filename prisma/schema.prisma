@@ -60,6 +60,7 @@ model Quest {
   title       String      @unique
   description String?
   maxScore    Int         @default(100)
+  timeBonusMaxScore Int    @default(20)
   timeLimitSeconds Int    @default(600)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
