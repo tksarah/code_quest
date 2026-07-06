@@ -1,0 +1,5 @@
+https://{$CADDY_HOSTNAME:localhost} {
+  tls internal
+  encode zstd gzip
+  reverse_proxy web:3000
+}

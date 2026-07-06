@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  passwordHash String
+  role         String         @default("TEACHER")
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+  auditLogs    AuditLog[]
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  lastSeenAt DateTime @default(now())
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([userId])
+}
+
+model Mission {
+  id               String       @id @default(cuid())
+  language         String       @default("generic")
+  type             String
+  title            String       @unique
+  prompt           String
+  codeSnippet      String?
+  choicesJson      String
+  correctAnswer    String
+  explanation      String
+  tagsJson         String
+  difficulty       String       @default("normal")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  questItems       QuestItem[]
+  responses        Response[]
+
+  @@index([language])
+  @@index([type])
+  @@index([difficulty])
+}
+
+model Quest {
+  id          String      @id @default(cuid())
+  title       String      @unique
+  description String?
+  maxScore    Int         @default(100)
+  timeLimitSeconds Int    @default(600)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       QuestItem[]
+  sessions    Session[]
+}
+
+model QuestItem {
+  id                String   @id @default(cuid())
+  questId           String
+  missionId         String
+  order             Int
+  quest             Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  mission           Mission  @relation(fields: [missionId], references: [id], onDelete: Restrict)
+
+  @@index([questId, order])
+  @@index([missionId])
+}
+
+model Session {
+  id             String        @id @default(cuid())
+  questId        String
+  title          String
+  joinCode       String        @unique
+  status         String        @default("running")
+  showRanking    Boolean       @default(false)
+  retentionUntil DateTime?
+  startedAt      DateTime?
+  endedAt        DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  quest          Quest         @relation(fields: [questId], references: [id], onDelete: Restrict)
+  participants   Participant[]
+  responses      Response[]
+
+  @@index([questId])
+  @@index([status])
+  @@index([retentionUntil])
+}
+
+model Participant {
+  id           String     @id @default(cuid())
+  sessionId    String
+  displayName  String
+  joinedAt     DateTime   @default(now())
+  lastActiveAt DateTime   @default(now())
+  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  responses    Response[]
+
+  @@index([sessionId])
+}
+
+model Response {
+  id             String      @id @default(cuid())
+  sessionId      String
+  participantId  String
+  missionId      String
+  answer         String
+  isCorrect      Boolean
+  score          Int
+  responseTimeMs Int
+  submittedAt    DateTime    @default(now())
+  session        Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  participant    Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  mission        Mission     @relation(fields: [missionId], references: [id], onDelete: Restrict)
+
+  @@unique([participantId, missionId])
+  @@index([sessionId])
+  @@index([missionId])
+}
+
+model AuditLog {
+  id          String     @id @default(cuid())
+  adminUserId String?
+  action      String
+  targetType  String
+  targetId    String?
+  detail      String?
+  createdAt   DateTime   @default(now())
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminUserId])
+  @@index([createdAt])
+}

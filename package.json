@@ -1,0 +1,43 @@
+{
+  "name": "code-quest-arena",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:fast": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "tsx prisma/setup-db.ts",
+    "db:setup": "tsx prisma/setup-db.ts",
+    "seed": "tsx prisma/seed.ts",
+    "test:domain": "tsx scripts/checks.ts",
+    "docker:dev": "docker compose -f compose.dev.yml up --build",
+    "docker:dev:https": "docker compose -f compose.dev.yml --profile https up --build"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "bcryptjs": "^2.4.3",
+    "next": "^15.3.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^24.0.10",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "prisma": "^6.11.1",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
+  }
+}

@@ -1,0 +1,54 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: file:./data/dev.db
+      APP_URL: http://localhost:3000
+      CADDY_HOSTNAME: localhost
+      SESSION_SECRET: dev-session-secret-change-before-production
+      INITIAL_ADMIN_EMAIL: admin@example.com
+      INITIAL_ADMIN_PASSWORD: changeme
+      DATA_RETENTION_DAYS: 30
+      NEXT_TELEMETRY_DISABLED: "1"
+      PRISMA_DEBUG_QUERIES: "0"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./scripts:/app/scripts
+      - ./next.config.ts:/app/next.config.ts:ro
+      - ./next-env.d.ts:/app/next-env.d.ts:ro
+      - ./postcss.config.mjs:/app/postcss.config.mjs:ro
+      - ./tailwind.config.ts:/app/tailwind.config.ts:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./data:/app/prisma/data
+      - next-cache:/app/.next
+    command: sh -c "npm run db:setup && npm run seed && npm run dev:fast -- --hostname 0.0.0.0"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    profiles:
+      - https
+    depends_on:
+      - web
+    environment:
+      CADDY_HOSTNAME: localhost
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - caddy-dev-data:/data
+      - caddy-dev-config:/config
+    restart: unless-stopped
+
+volumes:
+  next-cache:
+  caddy-dev-data:
+  caddy-dev-config:

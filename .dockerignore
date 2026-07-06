@@ -1,0 +1,13 @@
+.git
+.next
+node_modules
+data
+prisma/data
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+npm-debug.log*
+Dockerfile*
+compose*.yml
+README.md
