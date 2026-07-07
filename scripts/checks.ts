@@ -34,8 +34,16 @@ assert.deepEqual(buildScoreHistogram([0, 19, 20, 39, 40, 120], { maxScore: 100 }
   { minScore: 40, maxScore: 59, count: 1, barPercent: 50 },
   { minScore: 60, maxScore: 79, count: 0, barPercent: 0 },
   { minScore: 80, maxScore: 99, count: 0, barPercent: 0 },
-  { minScore: 100, maxScore: 119, count: 0, barPercent: 0 },
-  { minScore: 120, maxScore: 139, count: 1, barPercent: 50 }
+  { minScore: 100, maxScore: 120, count: 1, barPercent: 50 }
+]);
+
+assert.deepEqual(buildScoreHistogram([121, 999], { maxScore: 100 }), [
+  { minScore: 0, maxScore: 19, count: 0, barPercent: 0 },
+  { minScore: 20, maxScore: 39, count: 0, barPercent: 0 },
+  { minScore: 40, maxScore: 59, count: 0, barPercent: 0 },
+  { minScore: 60, maxScore: 79, count: 0, barPercent: 0 },
+  { minScore: 80, maxScore: 99, count: 0, barPercent: 0 },
+  { minScore: 100, maxScore: 120, count: 2, barPercent: 100 }
 ]);
 
 const originalChoices = ["A", "B", "C", "D"];

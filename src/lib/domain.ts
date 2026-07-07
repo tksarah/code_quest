@@ -143,23 +143,27 @@ export function buildScoreHistogram(
   const bucketSize = Math.max(1, Math.trunc(options.bucketSize ?? 20));
   const validScores = scores.filter(Number.isFinite);
   const plannedMaxScore =
-    Math.max(0, Math.trunc(options.maxScore)) +
+    normalizeQuestMaxScore(options.maxScore) +
     normalizeQuestTimeBonusMaxScore(options.timeBonusMaxScore);
-  const observedMaxScore = validScores.length > 0 ? Math.max(...validScores) : 0;
-  const rangeMaxScore = Math.max(plannedMaxScore, observedMaxScore);
-  const bucketCount = Math.floor(rangeMaxScore / bucketSize) + 1;
+  const bucketCount = Math.max(1, Math.ceil(plannedMaxScore / bucketSize));
   const buckets = Array.from({ length: bucketCount }, (_value, index) => {
     const minScore = index * bucketSize;
     return {
       minScore,
-      maxScore: minScore + bucketSize - 1,
+      maxScore:
+        index === bucketCount - 1
+          ? plannedMaxScore
+          : Math.min(minScore + bucketSize - 1, plannedMaxScore),
       count: 0,
       barPercent: 0
     };
   });
 
   for (const score of validScores) {
-    const bucketIndex = Math.max(0, Math.floor(score / bucketSize));
+    const bucketIndex = Math.min(
+      buckets.length - 1,
+      Math.max(0, Math.floor(score / bucketSize))
+    );
     buckets[bucketIndex].count += 1;
   }
 
