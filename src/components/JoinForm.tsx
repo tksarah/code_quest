@@ -32,7 +32,7 @@ export function JoinForm({
               </option>
             ))
           ) : (
-            <option value="">現在参加できるクエストはありません</option>
+            <option value="">公開中のクエストなし</option>
           )}
         </Select>
       </Field>
@@ -47,13 +47,13 @@ export function JoinForm({
         />
       </Field>
       {!hasAvailableSessions ? (
-        <p className="text-sm font-bold text-amber-200">
-          現在参加できるクエストはありません。
+        <p className="student-join-empty">
+          今は参加できるクエストがありません。
         </p>
       ) : null}
       {state?.error ? <p className="text-sm font-bold text-rose-300">{state.error}</p> : null}
       <RpgButton disabled={!hasAvailableSessions || pending}>
-        {pending ? "参加中..." : "クエストに参加"}
+        {pending ? "準備中..." : "クエスト開始"}
       </RpgButton>
     </form>
   );

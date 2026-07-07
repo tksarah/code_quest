@@ -27,7 +27,7 @@ export default async function JoinPage() {
 
         <div className="student-join-panel">
           <div className="student-panel-heading">
-            <h2>クエストに参加</h2>
+            <h2>Quest Board</h2>
           </div>
           <JoinForm
             availableSessions={availableSessions.map((session) => ({
