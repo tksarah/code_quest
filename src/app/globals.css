@@ -1211,6 +1211,51 @@ pre {
   min-width: 0;
 }
 
+.student-display-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 0 2px;
+}
+
+.student-display-my-result {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 680px);
+  margin: 2px auto 0;
+}
+
+.student-display-my-result-title {
+  width: fit-content;
+  margin: 0 auto;
+  border: 2px solid rgba(255, 248, 232, 0.9);
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.2);
+  color: #fff4c2;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.student-display-my-result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.student-display-my-result .student-stat-card {
+  min-height: 70px;
+  padding: 10px;
+  box-shadow:
+    0 0 0 3px rgba(23, 32, 51, 0.56),
+    0 7px 0 rgba(6, 12, 24, 0.32);
+}
+
+.student-display-my-result .student-stat-value {
+  font-size: 1.45rem;
+}
+
 .student-result-page {
   align-content: start;
   gap: 18px;
@@ -1280,6 +1325,7 @@ pre {
 }
 
 .student-histogram-column {
+  position: relative;
   display: grid;
   grid-template-rows: auto 150px auto;
   align-items: end;
@@ -1304,6 +1350,23 @@ pre {
   color: #b45309;
 }
 
+.student-histogram-you {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  border: 2px solid rgba(255, 248, 232, 0.96);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--student-gold), var(--student-orange));
+  color: #211407;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(124, 45, 18, 0.6);
+}
+
 .student-histogram-track {
   display: flex;
   overflow: hidden;
@@ -1322,6 +1385,23 @@ pre {
   border-radius: 6px 6px 0 0;
   background: linear-gradient(180deg, var(--student-coral), var(--student-gold), var(--student-mint));
   transition: height 180ms ease;
+}
+
+.student-histogram-column.is-current-user .student-histogram-track {
+  border-color: #b45309;
+  background: #fff7cc;
+  box-shadow:
+    0 0 0 4px rgba(255, 209, 102, 0.32),
+    0 8px 18px rgba(180, 83, 9, 0.18);
+}
+
+.student-histogram-column.is-current-user .student-histogram-bar {
+  background: linear-gradient(180deg, #fb7185, var(--student-gold), var(--student-mint));
+}
+
+.student-histogram-column.is-current-user .student-histogram-label,
+.student-histogram-column.is-current-user .student-histogram-count {
+  color: #7c2d12;
 }
 
 .student-rank-list {
@@ -1511,6 +1591,14 @@ pre {
   .student-display-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .student-display-my-result {
+    width: 100%;
+  }
+
+  .student-display-my-result-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
   .student-rank-board-grid {

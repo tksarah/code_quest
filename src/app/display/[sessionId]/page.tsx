@@ -1,6 +1,7 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { RankingAutoRefresh } from "@/components/RankingAutoRefresh";
-import { RpgWindow } from "@/components/Rpg";
+import { RpgLink, RpgWindow } from "@/components/Rpg";
 import { buildScoreHistogram, summarizeScores } from "@/lib/domain";
 import type { RankingEntry } from "@/lib/domain";
 import { getSessionDashboard } from "@/lib/session-data";
@@ -23,6 +24,10 @@ type ScoreRankingEntry = {
 };
 
 const TOP_RANKING_LIMIT = 8;
+
+function participantCookieName(sessionId: string) {
+  return `cqa_p_${sessionId}`;
+}
 
 function completedDuration(entry: RankingEntry) {
   return entry.completedDurationMs ?? Number.MAX_SAFE_INTEGER;
@@ -84,13 +89,30 @@ export default async function PublicRankingDisplayPage({
   params: Promise<{ sessionId: string }>;
 }) {
   const { sessionId } = await params;
+  const cookieStore = await cookies();
+  const participantId = cookieStore.get(participantCookieName(sessionId))?.value;
   const data = await getSessionDashboard(sessionId);
   if (!data) notFound();
 
   const { session, ranking } = data;
   if (session.status !== "running") notFound();
 
+  const myRankingEntry = participantId
+    ? ranking.find((entry) => entry.participantId === participantId)
+    : null;
+  const myCorrectRate = myRankingEntry
+    ? myRankingEntry.totalQuestions === 0
+      ? 0
+      : Math.round((myRankingEntry.correctCount / myRankingEntry.totalQuestions) * 100)
+    : null;
   const completedRanking = ranking.filter((entry) => entry.completedAt);
+  const totalScoreRanking = [...completedRanking].sort((a, b) =>
+    compareRankingEntry(a, b, "totalScore")
+  );
+  const myTotalRank =
+    myRankingEntry?.completedAt
+      ? totalScoreRanking.findIndex((entry) => entry.participantId === myRankingEntry.participantId) + 1
+      : 0;
   const completedCount = completedRanking.length;
   const completedScores = completedRanking.map((entry) => entry.totalScore);
   const scoreSummary = summarizeScores(completedScores);
@@ -127,6 +149,37 @@ export default async function PublicRankingDisplayPage({
           <p className="student-badge mx-auto">参加コード {session.joinCode}</p>
           <h1 className="rpg-title student-section-title">Ranking Board</h1>
           <p className="student-lead mx-auto">{session.quest.title}</p>
+          {myRankingEntry ? (
+            <section className="student-display-my-result" aria-label="あなたの結果">
+              <p className="student-display-my-result-title">Your Result</p>
+              <div className="student-display-my-result-grid">
+                {myTotalRank > 0 ? (
+                  <div className="student-stat-card">
+                    <span className="student-stat-label">Rank</span>
+                    <strong className="student-stat-value student-stat-accent">
+                      #{myTotalRank}
+                    </strong>
+                  </div>
+                ) : null}
+                <div className="student-stat-card">
+                  <span className="student-stat-label">Score</span>
+                  <strong className="student-stat-value student-stat-accent">
+                    {myRankingEntry.totalScore}
+                  </strong>
+                </div>
+                <div className="student-stat-card">
+                  <span className="student-stat-label">正答数</span>
+                  <strong className="student-stat-value">
+                    {myRankingEntry.correctCount}/{myRankingEntry.totalQuestions}
+                  </strong>
+                </div>
+                <div className="student-stat-card">
+                  <span className="student-stat-label">正答率</span>
+                  <strong className="student-stat-value">{myCorrectRate}%</strong>
+                </div>
+              </div>
+            </section>
+          ) : null}
         </div>
       </header>
 
@@ -179,10 +232,23 @@ export default async function PublicRankingDisplayPage({
               <div className="student-score-histogram" aria-label="完了者の得点分布">
                 {scoreHistogram.map((bucket) => (
                   <div
-                    className="student-histogram-column"
+                    className={`student-histogram-column ${
+                      myRankingEntry &&
+                      myTotalRank > 0 &&
+                      myRankingEntry.totalScore >= bucket.minScore &&
+                      myRankingEntry.totalScore <= bucket.maxScore
+                        ? "is-current-user"
+                        : ""
+                    }`}
                     key={`${bucket.minScore}-${bucket.maxScore}`}
                   >
                     <span className="student-histogram-count">{bucket.count}人</span>
+                    {myRankingEntry &&
+                    myTotalRank > 0 &&
+                    myRankingEntry.totalScore >= bucket.minScore &&
+                    myRankingEntry.totalScore <= bucket.maxScore ? (
+                      <span className="student-histogram-you">You #{myTotalRank}</span>
+                    ) : null}
                     <span className="student-histogram-track" aria-hidden="true">
                       <span
                         className="student-histogram-bar"
@@ -260,6 +326,9 @@ export default async function PublicRankingDisplayPage({
           </RpgWindow>
         </>
       )}
+      <div className="student-display-actions">
+        <RpgLink href="/join">Code Quest Arena ホームへ</RpgLink>
+      </div>
     </main>
   );
 }
