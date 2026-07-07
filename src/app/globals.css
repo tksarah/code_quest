@@ -584,6 +584,16 @@ pre {
   color: #2563eb;
 }
 
+.admin-shell .rpg-code {
+  border-color: rgba(37, 99, 235, 0.28);
+  background: #020617;
+  color: #e0f2fe;
+}
+
+.admin-shell .rpg-code code {
+  color: inherit;
+}
+
 @media (max-width: 960px) {
   .admin-shell {
     display: block;

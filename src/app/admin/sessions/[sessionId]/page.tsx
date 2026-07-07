@@ -1,6 +1,8 @@
 import {
   closeSessionAction,
   deleteSessionAction,
+  pauseSessionAction,
+  resumeSessionAction,
   toggleRankingAction
 } from "@/app/actions/admin";
 import { AdminShell } from "@/components/AdminShell";
@@ -92,13 +94,32 @@ export default async function AdminSessionPage({
               />
               <RpgButton>{session.showRanking ? "ランキングOFF" : "ランキングON"}</RpgButton>
             </form>
-            <RpgLink
-              href={`/display/${session.id}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              表示用ランキングを開く
-            </RpgLink>
+            {session.status !== "closed" ? (
+              <RpgLink href={`/admin/sessions/${session.id}/test`}>
+                テスト
+              </RpgLink>
+            ) : null}
+            {session.status === "running" ? (
+              <form action={pauseSessionAction}>
+                <input type="hidden" name="id" value={session.id} />
+                <RpgButton>停止</RpgButton>
+              </form>
+            ) : null}
+            {session.status === "waiting" ? (
+              <form action={resumeSessionAction}>
+                <input type="hidden" name="id" value={session.id} />
+                <RpgButton>開始</RpgButton>
+              </form>
+            ) : null}
+            {session.status === "running" ? (
+              <RpgLink
+                href={`/display/${session.id}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                表示用ランキングを開く
+              </RpgLink>
+            ) : null}
             <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
               CSV出力
             </a>

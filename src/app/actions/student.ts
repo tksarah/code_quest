@@ -29,7 +29,7 @@ export async function joinSessionAction(
     include: { quest: true }
   });
 
-  if (!session || session.status === "closed") {
+  if (!session || session.status !== "running") {
     return { error: "参加できるセッションが見つかりません。" };
   }
 
@@ -83,7 +83,7 @@ export async function submitAnswerAction(formData: FormData) {
   });
 
   const item = session?.quest.items[0];
-  if (!session || session.status === "closed" || !item || !participant) {
+  if (!session || session.status !== "running" || !item || !participant) {
     redirect("/join");
   }
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { HTMLAttributeAnchorTarget, ReactNode } from "react";
+import type { ButtonHTMLAttributes, HTMLAttributeAnchorTarget, ReactNode } from "react";
 
 export function RpgWindow({
   children,
@@ -22,15 +22,16 @@ export function RpgButton({
   children,
   className = "",
   disabled = false,
-  type = "submit"
-}: {
+  type = "submit",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
   className?: string;
   disabled?: boolean;
   type?: "submit" | "button";
 }) {
   return (
-    <button className={`rpg-button ${className}`} disabled={disabled} type={type}>
+    <button {...props} className={`rpg-button ${className}`} disabled={disabled} type={type}>
       {children}
     </button>
   );

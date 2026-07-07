@@ -305,6 +305,50 @@ export async function toggleRankingAction(formData: FormData) {
   revalidatePath(`/admin/sessions/${id}`);
 }
 
+export async function pauseSessionAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = stringValue(formData, "id");
+  if (!id) return;
+
+  const result = await prisma.session.updateMany({
+    where: { id, status: "running" },
+    data: { status: "waiting" }
+  });
+
+  if (result.count > 0) {
+    await writeAuditLog({
+      adminUserId: admin.id,
+      action: "session.pause",
+      targetType: "Session",
+      targetId: id
+    });
+  }
+  revalidatePath("/admin");
+  revalidatePath(`/admin/sessions/${id}`);
+}
+
+export async function resumeSessionAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const id = stringValue(formData, "id");
+  if (!id) return;
+
+  const result = await prisma.session.updateMany({
+    where: { id, status: "waiting" },
+    data: { status: "running" }
+  });
+
+  if (result.count > 0) {
+    await writeAuditLog({
+      adminUserId: admin.id,
+      action: "session.resume",
+      targetType: "Session",
+      targetId: id
+    });
+  }
+  revalidatePath("/admin");
+  revalidatePath(`/admin/sessions/${id}`);
+}
+
 export async function closeSessionAction(formData: FormData) {
   const admin = await requireAdmin();
   const id = stringValue(formData, "id");
@@ -319,6 +363,7 @@ export async function closeSessionAction(formData: FormData) {
     targetType: "Session",
     targetId: id
   });
+  revalidatePath("/admin");
   revalidatePath(`/admin/sessions/${id}`);
 }
 

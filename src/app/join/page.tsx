@@ -6,7 +6,7 @@ export const revalidate = 0;
 
 export default async function JoinPage() {
   const availableSessions = await prisma.session.findMany({
-    where: { status: { not: "closed" } },
+    where: { status: "running" },
     orderBy: { createdAt: "desc" },
     select: {
       joinCode: true,

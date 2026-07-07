@@ -2,6 +2,8 @@ import Link from "next/link";
 import {
   deleteExpiredSessionsAction,
   deleteSessionAction,
+  pauseSessionAction,
+  resumeSessionAction,
   startSessionAction
 } from "@/app/actions/admin";
 import { AdminShell } from "@/components/AdminShell";
@@ -118,13 +120,30 @@ export default async function AdminDashboardPage() {
                       <td>
                         <div className="admin-actions">
                           <RpgLink href={`/admin/sessions/${session.id}`}>監視</RpgLink>
-                          <RpgLink
-                            href={`/display/${session.id}`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            表示
+                          <RpgLink href={`/admin/sessions/${session.id}/test`}>
+                            テスト
                           </RpgLink>
+                          {session.status === "running" ? (
+                            <form action={pauseSessionAction}>
+                              <input type="hidden" name="id" value={session.id} />
+                              <RpgButton>停止</RpgButton>
+                            </form>
+                          ) : null}
+                          {session.status === "waiting" ? (
+                            <form action={resumeSessionAction}>
+                              <input type="hidden" name="id" value={session.id} />
+                              <RpgButton>開始</RpgButton>
+                            </form>
+                          ) : null}
+                          {session.status === "running" ? (
+                            <RpgLink
+                              href={`/display/${session.id}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              表示
+                            </RpgLink>
+                          ) : null}
                           <form action={deleteSessionAction}>
                             <input type="hidden" name="id" value={session.id} />
                             <RpgButton className="rpg-danger">削除</RpgButton>
@@ -207,7 +226,6 @@ export default async function AdminDashboardPage() {
                   <td>
                     <div className="admin-actions">
                       <RpgLink href={`/admin/sessions/${session.id}`}>結果</RpgLink>
-                      <RpgLink href={`/display/${session.id}`}>表示</RpgLink>
                       <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
                         CSV
                       </a>

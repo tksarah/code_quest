@@ -88,6 +88,8 @@ export default async function PublicRankingDisplayPage({
   if (!data) notFound();
 
   const { session, ranking } = data;
+  if (session.status !== "running") notFound();
+
   const completedRanking = ranking.filter((entry) => entry.completedAt);
   const completedCount = completedRanking.length;
   const completedScores = completedRanking.map((entry) => entry.totalScore);

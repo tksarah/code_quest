@@ -35,6 +35,7 @@ export default async function ResultPage({
   });
 
   if (!session) redirect("/join");
+  if (session.status === "waiting") redirect("/join");
   const totalQuestions = session.quest.items.length;
   const participant = session.participants.find((entry) => entry.id === participantId);
   if (!participant) redirect("/join");

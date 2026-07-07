@@ -44,6 +44,7 @@ export default async function PlayPage({
 
   if (!session || session.participants.length === 0) redirect("/join");
   if (session.status === "closed") redirect(`/result/${sessionId}`);
+  if (session.status !== "running") redirect("/join");
 
   const answeredMissionIds = new Set(session.responses.map((response) => response.missionId));
   const requestedItem = query.mission
