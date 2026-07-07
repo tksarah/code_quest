@@ -84,55 +84,59 @@ export default async function AdminSessionPage({
         </RpgWindow>
 
         <RpgWindow title="Controls">
-          <div className="grid gap-3">
-            <form action={toggleRankingAction}>
-              <input type="hidden" name="id" value={session.id} />
-              <input
-                type="hidden"
-                name="showRanking"
-                value={session.showRanking ? "false" : "true"}
-              />
-              <RpgButton>{session.showRanking ? "ランキングOFF" : "ランキングON"}</RpgButton>
-            </form>
-            {session.status !== "closed" ? (
-              <RpgLink href={`/admin/sessions/${session.id}/test`}>
-                テスト
-              </RpgLink>
-            ) : null}
-            {session.status === "running" ? (
-              <form action={pauseSessionAction}>
+          <div className="admin-session-controls">
+            <div className="admin-session-control-grid">
+              <form action={toggleRankingAction}>
                 <input type="hidden" name="id" value={session.id} />
-                <RpgButton>停止</RpgButton>
+                <input
+                  type="hidden"
+                  name="showRanking"
+                  value={session.showRanking ? "false" : "true"}
+                />
+                <RpgButton>{session.showRanking ? "ランキングOFF" : "ランキングON"}</RpgButton>
               </form>
-            ) : null}
-            {session.status === "waiting" ? (
-              <form action={resumeSessionAction}>
+              {session.status !== "closed" ? (
+                <RpgLink href={`/admin/sessions/${session.id}/test`}>
+                  テスト
+                </RpgLink>
+              ) : null}
+              {session.status === "running" ? (
+                <form action={pauseSessionAction}>
+                  <input type="hidden" name="id" value={session.id} />
+                  <RpgButton>停止</RpgButton>
+                </form>
+              ) : null}
+              {session.status === "waiting" ? (
+                <form action={resumeSessionAction}>
+                  <input type="hidden" name="id" value={session.id} />
+                  <RpgButton>開始</RpgButton>
+                </form>
+              ) : null}
+              {session.status === "running" ? (
+                <RpgLink
+                  href={`/display/${session.id}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  表示用ランキングを開く
+                </RpgLink>
+              ) : null}
+              <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
+                CSV出力
+              </a>
+            </div>
+            <div className="admin-session-danger-zone">
+              {session.status !== "closed" ? (
+                <form action={closeSessionAction}>
+                  <input type="hidden" name="id" value={session.id} />
+                  <RpgButton>セッション終了</RpgButton>
+                </form>
+              ) : null}
+              <form action={deleteSessionAction}>
                 <input type="hidden" name="id" value={session.id} />
-                <RpgButton>開始</RpgButton>
+                <RpgButton className="rpg-danger">セッション削除</RpgButton>
               </form>
-            ) : null}
-            {session.status === "running" ? (
-              <RpgLink
-                href={`/display/${session.id}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                表示用ランキングを開く
-              </RpgLink>
-            ) : null}
-            <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
-              CSV出力
-            </a>
-            {session.status !== "closed" ? (
-              <form action={closeSessionAction}>
-                <input type="hidden" name="id" value={session.id} />
-                <RpgButton>セッション終了</RpgButton>
-              </form>
-            ) : null}
-            <form action={deleteSessionAction}>
-              <input type="hidden" name="id" value={session.id} />
-              <RpgButton className="rpg-danger">セッション削除</RpgButton>
-            </form>
+            </div>
           </div>
         </RpgWindow>
       </div>

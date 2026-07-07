@@ -527,6 +527,47 @@ pre {
   color: #ffffff;
 }
 
+.admin-session-controls {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-session-control-grid,
+.admin-session-danger-zone {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.admin-session-danger-zone {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+}
+
+.admin-session-controls form {
+  margin: 0;
+  min-width: 0;
+}
+
+.admin-session-controls .rpg-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+@media (max-width: 640px) {
+  .admin-session-control-grid,
+  .admin-session-danger-zone {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-shell .rpg-input {
   min-height: 38px;
   border: 1px solid #cbd5e1;
