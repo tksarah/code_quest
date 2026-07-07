@@ -56,7 +56,7 @@ INITIAL_ADMIN_PASSWORD="changeme"
 | 変数 | 説明 |
 | --- | --- |
 | `DATABASE_URL` | Prisma / SQLite の接続先。SQLiteファイルは `prisma/` からの相対パスとして扱われます。 |
-| `APP_URL` | アプリの公開URL。Cookieや外部URL生成の基準になります。 |
+| `APP_URL` | アプリの公開URL。Cookieや外部URL生成の基準になります。QR参加URLは、`APP_URL` がlocalhostの場合はアクセス中の公開URLを優先して生成します。 |
 | `CADDY_HOSTNAME` | Caddyで受けるホスト名。本番では公開ドメインを指定します。 |
 | `SESSION_SECRET` | 本番では必ず長くランダムな値に変更してください。 |
 | `INITIAL_ADMIN_EMAIL` | 初期管理者メールアドレス。 |

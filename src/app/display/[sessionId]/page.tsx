@@ -62,7 +62,7 @@ function compareRankingEntry(a: RankingEntry, b: RankingEntry, scoreKey: Ranking
     }
   }
 
-  return a.displayName.localeCompare(b.displayName, "ja");
+  return a.nickname.localeCompare(b.nickname, "ja");
 }
 
 function buildTopRanking(entries: RankingEntry[], scoreKey: RankingScoreKey): ScoreRankingEntry[] {
@@ -308,7 +308,7 @@ export default async function PublicRankingDisplayPage({
                               <span className="student-rank-number">{rank}位</span>
                             )}
                           </span>
-                          <span className="student-rank-name">{entry.displayName}</span>
+                          <span className="student-rank-name">{entry.nickname}</span>
                           <span className="student-rank-score">
                             <span>{board.scoreLabel}</span>
                             <strong>{score} pt</strong>

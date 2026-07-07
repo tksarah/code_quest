@@ -141,6 +141,7 @@ export default async function AdminSessionPage({
               <tr>
                 <th>順位</th>
                 <th>名前</th>
+                <th>ニックネーム</th>
                 <th>進捗</th>
                 <th>スコア</th>
                 <th>基礎点</th>
@@ -156,6 +157,7 @@ export default async function AdminSessionPage({
                 <tr key={entry.participantId}>
                   <td>{entry.rank}</td>
                   <td className="font-bold text-yellow-300">{entry.displayName}</td>
+                  <td className="font-bold text-sky-200">{entry.nickname}</td>
                   <td>
                     {entry.answeredCount}/{entry.totalQuestions}
                   </td>
@@ -184,7 +186,7 @@ export default async function AdminSessionPage({
               ))}
               {ranking.length === 0 ? (
                 <tr>
-                  <td colSpan={10}>まだ参加者はいません。</td>
+                  <td colSpan={11}>まだ参加者はいません。</td>
                 </tr>
               ) : null}
             </tbody>

@@ -15,6 +15,11 @@ export async function joinSessionAction(
 ) {
   const joinCode = String(formData.get("joinCode") ?? "").trim().toUpperCase();
   const displayName = String(formData.get("displayName") ?? "").trim();
+  const nickname = String(formData.get("nickname") ?? "").trim();
+
+  if (!nickname) {
+    return { error: "ニックネームを入力してください。" };
+  }
 
   if (!joinCode || !displayName) {
     return { error: "参加コードと名前を入力してください。" };
@@ -22,6 +27,10 @@ export async function joinSessionAction(
 
   if (displayName.length > 40) {
     return { error: "名前は40文字以内で入力してください。" };
+  }
+
+  if (nickname.length > 40) {
+    return { error: "ニックネームは40文字以内で入力してください。" };
   }
 
   const session = await prisma.session.findUnique({
@@ -36,7 +45,8 @@ export async function joinSessionAction(
   const participant = await prisma.participant.create({
     data: {
       sessionId: session.id,
-      displayName
+      displayName,
+      nickname
     }
   });
 

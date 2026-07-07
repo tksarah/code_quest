@@ -55,6 +55,16 @@ export function JoinForm({
           required
         />
       </Field>
+      <Field label="ニックネーム">
+        <TextInput
+          name="nickname"
+          autoComplete="nickname"
+          disabled={!hasAvailableSessions || pending}
+          maxLength={40}
+          placeholder="ランキングに表示する名前"
+          required
+        />
+      </Field>
       {!hasAvailableSessions ? (
         <p className="student-join-empty">
           今は参加できるクエストがありません。

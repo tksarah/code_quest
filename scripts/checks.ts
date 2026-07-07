@@ -106,6 +106,7 @@ const ranking = rankParticipants({
       id: "a",
       sessionId: "s",
       displayName: "A",
+      nickname: "Alpha",
       joinedAt: now,
       lastActiveAt: now
     },
@@ -113,6 +114,7 @@ const ranking = rankParticipants({
       id: "b",
       sessionId: "s",
       displayName: "B",
+      nickname: "Beta",
       joinedAt: now,
       lastActiveAt: now
     }
@@ -166,6 +168,7 @@ const ranking = rankParticipants({
 });
 
 assert.equal(ranking[0].participantId, "a");
+assert.equal(ranking[0].nickname, "Alpha");
 assert.equal(ranking[0].rank, 1);
 assert.equal(ranking[0].baseScore, 100);
 assert.equal(ranking[0].timeBonus, 14);
@@ -186,6 +189,7 @@ const customBonusRanking = rankParticipants({
     id: entry.participantId,
     sessionId: "s",
     displayName: entry.displayName,
+    nickname: entry.nickname,
     joinedAt: entry.joinedAt,
     lastActiveAt: entry.lastActiveAt
   })),

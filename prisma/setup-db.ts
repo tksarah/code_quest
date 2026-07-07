@@ -142,6 +142,7 @@ async function main() {
       "id" TEXT NOT NULL PRIMARY KEY,
       "sessionId" TEXT NOT NULL,
       "displayName" TEXT NOT NULL,
+      "nickname" TEXT NOT NULL,
       "joinedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "lastActiveAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "Participant_sessionId_fkey"
@@ -149,6 +150,15 @@ async function main() {
         ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
+
+  if (!(await columnExists("Participant", "nickname"))) {
+    await exec(`ALTER TABLE "Participant" ADD COLUMN "nickname" TEXT NOT NULL DEFAULT ''`);
+    await exec(`
+      UPDATE "Participant"
+      SET "nickname" = "displayName"
+      WHERE TRIM("nickname") = ''
+    `);
+  }
 
   await exec(`
     CREATE TABLE IF NOT EXISTS "Response" (

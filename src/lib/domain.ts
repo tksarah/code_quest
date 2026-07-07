@@ -9,6 +9,7 @@ export type QuestScoringConfig = {
 export type RankingEntry = {
   participantId: string;
   displayName: string;
+  nickname: string;
   baseScore: number;
   timeBonus: number;
   totalScore: number;
@@ -294,6 +295,7 @@ export function rankParticipants(input: {
     return {
       participantId: participant.id,
       displayName: participant.displayName,
+      nickname: participant.nickname,
       baseScore: score.baseScore,
       timeBonus: score.timeBonus,
       totalScore: score.totalScore,
@@ -318,7 +320,10 @@ export function rankParticipants(input: {
     const aDuration = a.completedDurationMs ?? Number.MAX_SAFE_INTEGER;
     const bDuration = b.completedDurationMs ?? Number.MAX_SAFE_INTEGER;
     if (aDuration !== bDuration) return aDuration - bDuration;
-    return a.averageResponseTimeMs - b.averageResponseTimeMs;
+    if (a.averageResponseTimeMs !== b.averageResponseTimeMs) {
+      return a.averageResponseTimeMs - b.averageResponseTimeMs;
+    }
+    return a.nickname.localeCompare(b.nickname, "ja");
   });
 
   return entries.map((entry, index) => ({ ...entry, rank: index + 1 }));

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import {
   deleteSessionAction,
   pauseSessionAction,
@@ -12,20 +13,74 @@ import { SessionQrButton } from "@/components/SessionQrButton";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-function joinUrlFor(joinCode: string) {
-  const path = `/join?code=${encodeURIComponent(joinCode)}`;
-  const appUrl = process.env.APP_URL?.trim();
-  if (!appUrl) return path;
+type HeaderReader = {
+  get(name: string): string | null;
+};
+
+function firstHeaderValue(value: string | null): string {
+  return value?.split(",")[0]?.trim() ?? "";
+}
+
+function absoluteHttpUrl(value: string | null | undefined): URL | null {
+  if (!value?.trim()) return null;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:" ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function isLocalhostUrl(url: URL): boolean {
+  const hostname = url.hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname === "::1"
+  );
+}
+
+function requestOriginFromHeaders(headerStore: HeaderReader): string | null {
+  const forwardedHost = firstHeaderValue(headerStore.get("x-forwarded-host"));
+  const host = forwardedHost || firstHeaderValue(headerStore.get("host"));
+  if (!host) return null;
+
+  const forwardedProto = firstHeaderValue(headerStore.get("x-forwarded-proto")).toLowerCase();
+  const protocol = forwardedProto === "http" || forwardedProto === "https"
+    ? forwardedProto
+    : host.startsWith("localhost") || host.startsWith("127.0.0.1")
+      ? "http"
+      : "https";
 
   try {
-    return new URL(path, appUrl).toString();
+    return new URL(`${protocol}://${host}`).origin;
   } catch {
-    return path;
+    return null;
   }
+}
+
+function joinUrlFor(joinCode: string, requestOrigin: string | null) {
+  const path = `/join?code=${encodeURIComponent(joinCode)}`;
+  const appUrl = absoluteHttpUrl(process.env.APP_URL);
+  if (appUrl && !isLocalhostUrl(appUrl)) {
+    return new URL(path, appUrl).toString();
+  }
+
+  if (requestOrigin) {
+    return new URL(path, requestOrigin).toString();
+  }
+
+  if (appUrl) {
+    return new URL(path, appUrl).toString();
+  }
+
+  return path;
 }
 
 export default async function AdminDashboardPage() {
   const admin = await requireAdmin();
+  const requestOrigin = requestOriginFromHeaders(await headers());
   const [quests, runningSessions] = await Promise.all([
     prisma.quest.findMany({
       include: { items: { include: { mission: true } } },
@@ -135,7 +190,7 @@ export default async function AdminDashboardPage() {
                           <CopyJoinCodeButton joinCode={session.joinCode} />
                           <SessionQrButton
                             joinCode={session.joinCode}
-                            joinUrl={joinUrlFor(session.joinCode)}
+                            joinUrl={joinUrlFor(session.joinCode, requestOrigin)}
                             sessionTitle={session.title}
                           />
                         </div>
