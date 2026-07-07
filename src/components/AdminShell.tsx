@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { logoutAction } from "@/app/actions/auth";
 
-type AdminNavKey = "dashboard" | "sessions" | "missions" | "quests";
+type AdminNavKey = "dashboard" | "missions" | "quests";
 
 const navItems: Array<{
   key?: AdminNavKey;
@@ -11,7 +11,6 @@ const navItems: Array<{
   target?: "_blank";
 }> = [
   { key: "dashboard", href: "/admin", label: "ダッシュボード" },
-  { key: "sessions", href: "/admin#sessions", label: "セッション" },
   { key: "missions", href: "/admin/missions", label: "ミッション" },
   { key: "quests", href: "/admin/quests", label: "クエスト" },
   { href: "/join", label: "学生参加画面", target: "_blank" }

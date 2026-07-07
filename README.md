@@ -13,8 +13,6 @@ Code Quest Arena は、授業や研修で使うためのクエスト形式の理
 - セッションごとの参加コード発行
 - 参加者の進捗、正答数、スコア、時間ボーナスを集計
 - 表示用ランキングボード `/display/[sessionId]`
-- 管理者向けCSV出力
-- SQLiteによるデータ保存
 - Docker Compose + Caddy による本番公開
 
 ## 技術スタック
@@ -41,7 +39,6 @@ Code Quest Arena は、授業や研修で使うためのクエスト形式の理
 | クエスト管理 | `/admin/quests` |
 | セッション詳細 | `/admin/sessions/[sessionId]` |
 | 表示用ランキング | `/display/[sessionId]` |
-| CSV出力 | `/admin/sessions/[sessionId]/csv` |
 
 ## 環境変数
 
@@ -54,7 +51,6 @@ CADDY_HOSTNAME="localhost"
 SESSION_SECRET="change-this-to-a-long-random-string"
 INITIAL_ADMIN_EMAIL="admin@example.com"
 INITIAL_ADMIN_PASSWORD="changeme"
-DATA_RETENTION_DAYS="90"
 ```
 
 | 変数 | 説明 |
@@ -65,7 +61,6 @@ DATA_RETENTION_DAYS="90"
 | `SESSION_SECRET` | 本番では必ず長くランダムな値に変更してください。 |
 | `INITIAL_ADMIN_EMAIL` | 初期管理者メールアドレス。 |
 | `INITIAL_ADMIN_PASSWORD` | 初期管理者パスワード。初回起動前に必ず変更してください。 |
-| `DATA_RETENTION_DAYS` | セッションデータの保持日数。期限切れデータは管理画面から削除できます。 |
 
 初期管理者は `npm run seed` またはDocker起動時のseed処理で作成されます。既に同じメールアドレスの管理者が存在する場合、seedはパスワードを上書きしません。
 
@@ -169,7 +164,6 @@ CADDY_HOSTNAME="code-quest.example.com"
 SESSION_SECRET="replace-with-a-long-random-secret"
 INITIAL_ADMIN_EMAIL="teacher@example.com"
 INITIAL_ADMIN_PASSWORD="replace-before-first-start"
-DATA_RETENTION_DAYS="90"
 ```
 
 `SESSION_SECRET` と `INITIAL_ADMIN_PASSWORD` は必ず変更してください。初期管理者パスワードは初回seed時に作成されるため、最初の本番起動前に設定しておくのが安全です。
@@ -207,32 +201,6 @@ git pull
 docker compose up --build -d
 ```
 
-データはDocker volumeに残ります。`docker compose down -v` はSQLiteデータも削除するため、本番では実行しないでください。
-
-## データ保存とバックアップ
-
-SQLiteデータは、コンテナ内では `/app/prisma/data` に保存されます。
-
-開発時:
-
-- ホスト側の `data/` を `/app/prisma/data` にマウント
-
-本番時:
-
-- Docker volume `app-data` を `/app/prisma/data` にマウント
-
-本番でバックアップする主な対象:
-
-- SQLiteデータ: `app-data`
-- 環境変数: `.env`
-- 必要に応じてCaddy証明書volume: `caddy-data`, `caddy-config`
-
-簡易バックアップ例:
-
-```bash
-docker compose cp web:/app/prisma/data ./backup-prisma-data
-```
-
 ## 管理者の基本操作
 
 1. `/admin` にログインする
@@ -243,8 +211,7 @@ docker compose cp web:/app/prisma/data ./backup-prisma-data
 6. 参加者は `/join` で参加コードと表示名を入力する
 7. 管理画面で進捗を確認する
 8. 必要に応じてランキング公開をONにする
-9. 授業後にCSVを出力する
-10. セッションを終了または削除する
+9. 授業後にセッションを削除する
 
 ## npm scripts
 
@@ -267,7 +234,7 @@ docker compose cp web:/app/prisma/data ./backup-prisma-data
 src/app/                 Next.js App Router
 src/app/actions/         Server Actions
 src/components/          UIコンポーネント
-src/lib/                 認証、Prisma、スコア計算、CSV生成
+src/lib/                 認証、Prisma、スコア計算
 prisma/schema.prisma     Prismaスキーマ
 prisma/setup-db.ts       SQLiteスキーマ作成・更新スクリプト
 prisma/seed.ts           初期データ投入スクリプト

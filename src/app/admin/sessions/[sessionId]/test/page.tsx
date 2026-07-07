@@ -31,7 +31,7 @@ export default async function AdminSessionTestPage({
 
   return (
     <AdminShell
-      active="sessions"
+      active="dashboard"
       actions={<RpgLink href={`/admin/sessions/${session.id}`}>セッション詳細</RpgLink>}
       description={`${session.quest.title} / ${session.status}`}
       title={`${session.title} テスト`}

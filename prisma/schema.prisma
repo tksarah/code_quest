@@ -87,9 +87,7 @@ model Session {
   joinCode       String        @unique
   status         String        @default("running")
   showRanking    Boolean       @default(false)
-  retentionUntil DateTime?
   startedAt      DateTime?
-  endedAt        DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   quest          Quest         @relation(fields: [questId], references: [id], onDelete: Restrict)
@@ -98,7 +96,6 @@ model Session {
 
   @@index([questId])
   @@index([status])
-  @@index([retentionUntil])
 }
 
 model Participant {

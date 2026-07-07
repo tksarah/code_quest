@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  deleteExpiredSessionsAction,
   deleteSessionAction,
   pauseSessionAction,
   resumeSessionAction,
@@ -14,7 +13,7 @@ import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboardPage() {
   const admin = await requireAdmin();
-  const [quests, runningSessions, pastSessions] = await Promise.all([
+  const [quests, runningSessions] = await Promise.all([
     prisma.quest.findMany({
       include: { items: { include: { mission: true } } },
       orderBy: { updatedAt: "desc" }
@@ -23,12 +22,6 @@ export default async function AdminDashboardPage() {
       where: { status: { in: ["waiting", "running"] } },
       include: { quest: true, participants: true },
       orderBy: { createdAt: "desc" }
-    }),
-    prisma.session.findMany({
-      where: { status: "closed" },
-      include: { quest: true, participants: true },
-      orderBy: { createdAt: "desc" },
-      take: 12
     })
   ]);
   const runningParticipants = runningSessions.reduce(
@@ -54,10 +47,6 @@ export default async function AdminDashboardPage() {
         <div className="admin-stat-card">
           <span className="admin-stat-label">クエスト</span>
           <strong className="admin-stat-value">{quests.length}</strong>
-        </div>
-        <div className="admin-stat-card">
-          <span className="admin-stat-label">直近終了セッション</span>
-          <strong className="admin-stat-value">{pastSessions.length}</strong>
         </div>
       </section>
 
@@ -199,65 +188,6 @@ export default async function AdminDashboardPage() {
         </div>
       </details>
 
-      <details className="admin-disclosure">
-        <summary>終了済みセッション / CSV</summary>
-        <div className="admin-disclosure-body admin-table-wrap">
-          <table className="rpg-table">
-            <thead>
-              <tr>
-                <th>セッション</th>
-                <th>クエスト</th>
-                <th>参加者</th>
-                <th>終了</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pastSessions.map((session) => (
-                <tr key={session.id}>
-                  <td>
-                    <Link className="font-bold text-yellow-300" href={`/admin/sessions/${session.id}`}>
-                      {session.title}
-                    </Link>
-                  </td>
-                  <td>{session.quest.title}</td>
-                  <td>{session.participants.length}</td>
-                  <td>{session.endedAt?.toLocaleString("ja-JP") ?? "-"}</td>
-                  <td>
-                    <div className="admin-actions">
-                      <RpgLink href={`/admin/sessions/${session.id}`}>結果</RpgLink>
-                      <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
-                        CSV
-                      </a>
-                      <form action={deleteSessionAction}>
-                        <input type="hidden" name="id" value={session.id} />
-                        <RpgButton className="rpg-danger">削除</RpgButton>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {pastSessions.length === 0 ? (
-                <tr>
-                  <td colSpan={5}>終了済みセッションはありません。</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      </details>
-
-      <details className="admin-disclosure">
-        <summary>データ整理</summary>
-        <div className="admin-disclosure-body">
-          <p className="admin-muted">
-            保持期限を過ぎたセッションを削除できます。CSV出力後の整理に使います。
-          </p>
-          <form action={deleteExpiredSessionsAction} className="mt-4">
-            <RpgButton className="rpg-danger">期限切れデータ削除</RpgButton>
-          </form>
-        </div>
-      </details>
     </AdminShell>
   );
 }

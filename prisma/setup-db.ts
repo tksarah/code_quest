@@ -128,9 +128,7 @@ async function main() {
       "joinCode" TEXT NOT NULL UNIQUE,
       "status" TEXT NOT NULL DEFAULT 'running',
       "showRanking" BOOLEAN NOT NULL DEFAULT false,
-      "retentionUntil" DATETIME,
       "startedAt" DATETIME,
-      "endedAt" DATETIME,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "Session_questId_fkey"
@@ -202,7 +200,6 @@ async function main() {
   await exec('CREATE INDEX IF NOT EXISTS "QuestItem_missionId_idx" ON "QuestItem" ("missionId")');
   await exec('CREATE INDEX IF NOT EXISTS "Session_questId_idx" ON "Session" ("questId")');
   await exec('CREATE INDEX IF NOT EXISTS "Session_status_idx" ON "Session" ("status")');
-  await exec('CREATE INDEX IF NOT EXISTS "Session_retentionUntil_idx" ON "Session" ("retentionUntil")');
   await exec('CREATE INDEX IF NOT EXISTS "Participant_sessionId_idx" ON "Participant" ("sessionId")');
   await exec('CREATE INDEX IF NOT EXISTS "Response_sessionId_idx" ON "Response" ("sessionId")');
   await exec('CREATE INDEX IF NOT EXISTS "Response_missionId_idx" ON "Response" ("missionId")');

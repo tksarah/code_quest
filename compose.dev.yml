@@ -12,7 +12,6 @@ services:
       SESSION_SECRET: dev-session-secret-change-before-production
       INITIAL_ADMIN_EMAIL: admin@example.com
       INITIAL_ADMIN_PASSWORD: changeme
-      DATA_RETENTION_DAYS: 30
       NEXT_TELEMETRY_DISABLED: "1"
       PRISMA_DEBUG_QUERIES: "0"
     ports:

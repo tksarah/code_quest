@@ -1,5 +1,4 @@
 import {
-  closeSessionAction,
   deleteSessionAction,
   pauseSessionAction,
   resumeSessionAction,
@@ -34,7 +33,7 @@ export default async function AdminSessionPage({
 
   return (
     <AdminShell
-      active="sessions"
+      active="dashboard"
       actions={<RpgLink href="/admin#sessions">セッション一覧</RpgLink>}
       description={
         <>
@@ -121,17 +120,8 @@ export default async function AdminSessionPage({
                   表示用ランキングを開く
                 </RpgLink>
               ) : null}
-              <a className="rpg-button inline-flex" href={`/admin/sessions/${session.id}/csv`}>
-                CSV出力
-              </a>
             </div>
             <div className="admin-session-danger-zone">
-              {session.status !== "closed" ? (
-                <form action={closeSessionAction}>
-                  <input type="hidden" name="id" value={session.id} />
-                  <RpgButton>セッション終了</RpgButton>
-                </form>
-              ) : null}
               <form action={deleteSessionAction}>
                 <input type="hidden" name="id" value={session.id} />
                 <RpgButton className="rpg-danger">セッション削除</RpgButton>

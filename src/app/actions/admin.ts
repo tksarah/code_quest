@@ -267,15 +267,13 @@ export async function startSessionAction(formData: FormData) {
   const questId = stringValue(formData, "questId");
   const title = stringValue(formData, "title");
   if (!questId) return;
-  const retentionDays = Number(process.env.DATA_RETENTION_DAYS ?? 90);
   const session = await prisma.session.create({
     data: {
       questId,
       title: title || "授業クエスト",
       joinCode: await uniqueJoinCode(),
       status: "running",
-      startedAt: new Date(),
-      retentionUntil: new Date(Date.now() + retentionDays * 24 * 60 * 60 * 1000)
+      startedAt: new Date()
     }
   });
   await writeAuditLog({
@@ -349,24 +347,6 @@ export async function resumeSessionAction(formData: FormData) {
   revalidatePath(`/admin/sessions/${id}`);
 }
 
-export async function closeSessionAction(formData: FormData) {
-  const admin = await requireAdmin();
-  const id = stringValue(formData, "id");
-  if (!id) return;
-  await prisma.session.update({
-    where: { id },
-    data: { status: "closed", endedAt: new Date() }
-  });
-  await writeAuditLog({
-    adminUserId: admin.id,
-    action: "session.close",
-    targetType: "Session",
-    targetId: id
-  });
-  revalidatePath("/admin");
-  revalidatePath(`/admin/sessions/${id}`);
-}
-
 export async function deleteSessionAction(formData: FormData) {
   const admin = await requireAdmin();
   const id = stringValue(formData, "id");
@@ -379,22 +359,4 @@ export async function deleteSessionAction(formData: FormData) {
     targetId: id
   });
   redirect("/admin");
-}
-
-export async function deleteExpiredSessionsAction() {
-  const admin = await requireAdmin();
-  const result = await prisma.session.deleteMany({
-    where: {
-      retentionUntil: {
-        lt: new Date()
-      }
-    }
-  });
-  await writeAuditLog({
-    adminUserId: admin.id,
-    action: "session.delete_expired",
-    targetType: "Session",
-    detail: String(result.count)
-  });
-  revalidatePath("/admin");
 }
