@@ -4,7 +4,13 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function JoinPage() {
+export default async function JoinPage({
+  searchParams
+}: {
+  searchParams: Promise<{ code?: string }>;
+}) {
+  const params = await searchParams;
+  const initialJoinCode = String(params.code ?? "").trim().toUpperCase();
   const availableSessions = await prisma.session.findMany({
     where: { status: "running" },
     orderBy: { createdAt: "desc" },
@@ -30,6 +36,7 @@ export default async function JoinPage() {
             <h2>Quest Board</h2>
           </div>
           <JoinForm
+            initialJoinCode={initialJoinCode}
             availableSessions={availableSessions.map((session) => ({
               joinCode: session.joinCode,
               sessionTitle: session.title

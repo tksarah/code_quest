@@ -10,12 +10,20 @@ type AvailableSession = {
 };
 
 export function JoinForm({
-  availableSessions
+  availableSessions,
+  initialJoinCode
 }: {
   availableSessions: AvailableSession[];
+  initialJoinCode?: string;
 }) {
   const [state, formAction, pending] = useActionState(joinSessionAction, undefined);
   const hasAvailableSessions = availableSessions.length > 0;
+  const normalizedInitialJoinCode = initialJoinCode?.trim().toUpperCase();
+  const selectedJoinCode = availableSessions.some(
+    (session) => session.joinCode === normalizedInitialJoinCode
+  )
+    ? normalizedInitialJoinCode
+    : undefined;
 
   return (
     <form action={formAction} className="grid gap-4">
@@ -23,6 +31,7 @@ export function JoinForm({
         <Select
           name="joinCode"
           disabled={!hasAvailableSessions || pending}
+          defaultValue={selectedJoinCode ?? availableSessions[0]?.joinCode ?? ""}
           required
         >
           {hasAvailableSessions ? (

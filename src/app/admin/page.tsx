@@ -8,8 +8,21 @@ import {
 import { AdminShell } from "@/components/AdminShell";
 import { CopyJoinCodeButton } from "@/components/CopyJoinCodeButton";
 import { Field, RpgButton, RpgLink, RpgWindow, TextInput } from "@/components/Rpg";
+import { SessionQrButton } from "@/components/SessionQrButton";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+function joinUrlFor(joinCode: string) {
+  const path = `/join?code=${encodeURIComponent(joinCode)}`;
+  const appUrl = process.env.APP_URL?.trim();
+  if (!appUrl) return path;
+
+  try {
+    return new URL(path, appUrl).toString();
+  } catch {
+    return path;
+  }
+}
 
 export default async function AdminDashboardPage() {
   const admin = await requireAdmin();
@@ -81,7 +94,15 @@ export default async function AdminDashboardPage() {
         <section id="sessions">
           <RpgWindow title="実施中モニタリング">
             <div className="admin-table-wrap">
-              <table className="rpg-table">
+              <table className="rpg-table admin-session-table">
+                <colgroup>
+                  <col className="admin-session-col-title" />
+                  <col className="admin-session-col-quest" />
+                  <col className="admin-session-col-code" />
+                  <col className="admin-session-col-participants" />
+                  <col className="admin-session-col-status" />
+                  <col className="admin-session-col-actions" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>セッション</th>
@@ -96,13 +117,28 @@ export default async function AdminDashboardPage() {
                   {runningSessions.map((session) => (
                     <tr key={session.id}>
                       <td>
-                        <Link className="font-bold text-yellow-300" href={`/admin/sessions/${session.id}`}>
+                        <Link
+                          className="admin-session-title-link font-bold text-yellow-300"
+                          href={`/admin/sessions/${session.id}`}
+                          title={session.title}
+                        >
                           {session.title}
                         </Link>
                       </td>
-                      <td>{session.quest.title}</td>
                       <td>
-                        <CopyJoinCodeButton joinCode={session.joinCode} />
+                        <span className="admin-session-quest-name" title={session.quest.title}>
+                          {session.quest.title}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="admin-session-join-tools">
+                          <CopyJoinCodeButton joinCode={session.joinCode} />
+                          <SessionQrButton
+                            joinCode={session.joinCode}
+                            joinUrl={joinUrlFor(session.joinCode)}
+                            sessionTitle={session.title}
+                          />
+                        </div>
                       </td>
                       <td>{session.participants.length}</td>
                       <td>{session.status}</td>

@@ -29,18 +29,22 @@ export function CopyJoinCodeButton({ joinCode }: { joinCode: string }) {
     }
   }
 
-  const suffix =
-    status === "copied" ? "コピー済み" : status === "failed" ? "コピー不可" : "クリックでコピー";
+  const title =
+    status === "copied"
+      ? "参加コードをコピーしました"
+      : status === "failed"
+        ? "参加コードをコピーできませんでした"
+        : "参加コードをコピー";
 
   return (
     <button
-      aria-label={`参加コード ${joinCode} をコピー`}
+      aria-label={title}
       className="admin-copy-code"
       onClick={copyJoinCode}
+      title={title}
       type="button"
     >
       <span className="admin-copy-code-value">{joinCode}</span>
-      <span className="admin-copy-code-status">{suffix}</span>
     </button>
   );
 }

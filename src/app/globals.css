@@ -397,12 +397,11 @@ pre {
   min-height: 30px;
   cursor: pointer;
   align-items: center;
-  gap: 8px;
   border: 1px solid rgba(37, 99, 235, 0.24);
   border-radius: 8px;
   background: #eff6ff;
   color: #1d4ed8;
-  padding: 5px 8px;
+  padding: 5px 9px;
   font: inherit;
   font-size: 0.84rem;
   font-weight: 900;
@@ -416,10 +415,208 @@ pre {
   outline: none;
 }
 
-.admin-copy-code-status {
+.admin-session-table {
+  width: 100%;
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.admin-session-col-title {
+  width: 15%;
+}
+
+.admin-session-col-quest {
+  width: 25%;
+}
+
+.admin-session-col-code {
+  width: 17%;
+}
+
+.admin-session-col-participants {
+  width: 7%;
+}
+
+.admin-session-col-status {
+  width: 9%;
+}
+
+.admin-session-col-actions {
+  width: 27%;
+}
+
+.admin-session-title-link,
+.admin-session-quest-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-session-join-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.admin-qr-button {
+  display: inline-flex;
+  min-height: 30px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 5px 9px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.admin-qr-button:hover,
+.admin-qr-button:focus-visible {
+  border-color: #2563eb;
+  background: #f8fafc;
+  outline: none;
+}
+
+.admin-session-table .admin-actions {
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+.admin-session-table .rpg-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.admin-qr-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.48);
+  padding: 20px;
+}
+
+.admin-qr-modal {
+  width: min(420px, 100%);
+  border: 1px solid rgba(23, 32, 51, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+}
+
+.admin-qr-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-qr-modal h3 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.admin-qr-kicker {
+  margin: 0 0 3px;
   color: #64748b;
   font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.admin-qr-close,
+.admin-qr-copy {
+  min-height: 34px;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-qr-close:hover,
+.admin-qr-close:focus-visible,
+.admin-qr-copy:hover,
+.admin-qr-copy:focus-visible {
+  border-color: #2563eb;
+  background: #eff6ff;
+  outline: none;
+}
+
+.admin-qr-code-frame {
+  display: grid;
+  min-height: 300px;
+  place-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.admin-qr-code-frame img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.admin-qr-status {
+  color: #64748b;
+  font-size: 0.9rem;
   font-weight: 800;
+}
+
+.admin-qr-details {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  font-size: 0.85rem;
+}
+
+.admin-qr-details div {
+  display: grid;
+  gap: 3px;
+}
+
+.admin-qr-details dt {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.admin-qr-details dd {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-weight: 800;
+}
+
+.admin-qr-copy {
+  width: 100%;
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.admin-qr-copy:hover,
+.admin-qr-copy:focus-visible {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #ffffff;
 }
 
 .admin-empty {
@@ -603,6 +800,18 @@ pre {
   background: #f8fafc;
   color: #475569;
   font-size: 0.76rem;
+}
+
+.admin-shell .admin-session-table {
+  width: 100%;
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.admin-shell .admin-session-table .rpg-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  white-space: nowrap;
 }
 
 .admin-shell .rpg-card-grid {
