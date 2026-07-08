@@ -11,7 +11,7 @@ type MissionType =
   | "bug_hunt"
   | "concept_check";
 type Difficulty = "easy" | "normal" | "hard";
-type MissionLanguage = "python" | "php" | "generic";
+type MissionLanguage = "python" | "php" | "html" | "generic";
 
 type MissionSeed = {
   language: MissionLanguage;
@@ -32,8 +32,10 @@ const seedQuestTitles = [
   "コーディング基礎ミニ総復習",
   "コーディング基礎ミニ総復習（Python）",
   "コーディング基礎ミニ総復習（PHP）",
+  "コーディング基礎ミニ総復習（HTML）",
   "コーディング応用ミニ総復習（Python）",
-  "コーディング応用ミニ総復習（PHP）"
+  "コーディング応用ミニ総復習（PHP）",
+  "コーディング応用ミニ総復習（HTML）"
 ];
 
 const oldSeedMissionTitles = [
@@ -589,11 +591,267 @@ const advancedPhpMissions: MissionSeed[] = [
   }
 ];
 
+const htmlMissions: MissionSeed[] = [
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: 基本構造",
+    prompt: "HTML文書の基本構造として最も適切なものはどれですか？",
+    codeSnippet: "<!DOCTYPE html>\n<html>\n  <head></head>\n  <body></body>\n</html>",
+    choices: [
+      "html要素の中にhead要素とbody要素を置く",
+      "body要素の中にhtml要素を置く",
+      "head要素だけを書けば画面に表示される",
+      "DOCTYPEは閉じタグとして使う"
+    ],
+    correctAnswer: "html要素の中にhead要素とbody要素を置く",
+    explanation: "HTML文書はhtml要素を全体の入れ物にし、headに設定情報、bodyに画面へ表示する内容を書きます。",
+    tags: ["html", "基本構造", "head", "body"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: 見出しタグ",
+    prompt: "ページの最も大きな見出しに使うタグとして最も適切なものはどれですか？",
+    choices: ["<h1>", "<p>", "<a>", "<ul>"],
+    correctAnswer: "<h1>",
+    explanation: "h1はページの主見出しを表します。h2、h3のように数字が大きくなるほど下位の見出しになります。",
+    tags: ["html", "見出し", "h1"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: 段落タグ",
+    prompt: "文章の段落を表すタグはどれですか？",
+    choices: ["<p>", "<img>", "<li>", "<table>"],
+    correctAnswer: "<p>",
+    explanation: "p要素はparagraphの略で、文章のまとまりである段落を表します。",
+    tags: ["html", "段落", "p"]
+  },
+  {
+    language: "html",
+    type: "output_prediction",
+    title: "HTML: リンクのhref属性",
+    prompt: "次のコードで、リンク先を指定している属性はどれですか？",
+    codeSnippet: '<a href="https://example.com">Example</a>',
+    choices: ["href", "src", "alt", "class"],
+    correctAnswer: "href",
+    explanation: "a要素ではhref属性に移動先のURLやパスを書きます。",
+    tags: ["html", "リンク", "属性"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: 画像のalt属性",
+    prompt: "img要素のalt属性の役割として正しいものはどれですか？",
+    codeSnippet: '<img src="cat.png" alt="白い猫">',
+    choices: [
+      "画像の説明テキストを書く",
+      "画像ファイルの大きさを必ず指定する",
+      "リンク先URLを書く",
+      "画像を中央揃えにする"
+    ],
+    correctAnswer: "画像の説明テキストを書く",
+    explanation: "alt属性は画像が表示できない場合やスクリーンリーダー利用時に、画像の意味を伝えるために使います。",
+    tags: ["html", "画像", "alt", "アクセシビリティ"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: リストの組み方",
+    prompt: "順序なしリストの中に各項目を書く組み合わせとして正しいものはどれですか？",
+    codeSnippet: "<ul>\n  <li>HTML</li>\n  <li>CSS</li>\n</ul>",
+    choices: ["<ul> と <li>", "<table> と <td>", "<form> と <input>", "<head> と <title>"],
+    correctAnswer: "<ul> と <li>",
+    explanation: "ul要素は順序なしリスト、li要素はリスト内の各項目を表します。",
+    tags: ["html", "リスト", "ul", "li"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: フォームの入力欄",
+    prompt: "ユーザーが1行の文字を入力する欄を作るタグとして最も適切なものはどれですか？",
+    choices: ['<input type="text">', "<button>", "<label>", "<section>"],
+    correctAnswer: '<input type="text">',
+    explanation: "input要素のtype属性にtextを指定すると、1行のテキスト入力欄を作れます。",
+    tags: ["html", "フォーム", "input"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: ボタンタグ",
+    prompt: "フォーム送信やクリック操作のボタンを表すタグはどれですか？",
+    choices: ["<button>", "<meta>", "<title>", "<tbody>"],
+    correctAnswer: "<button>",
+    explanation: "button要素は押せるボタンを表します。フォーム送信やJavaScriptの操作に使えます。",
+    tags: ["html", "フォーム", "button"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: セマンティックタグ",
+    prompt: "ページ内の主要な本文エリアを表すセマンティックタグはどれですか？",
+    choices: ["<main>", "<span>", "<br>", "<input>"],
+    correctAnswer: "<main>",
+    explanation: "main要素はページの主要な内容を表します。意味のあるタグを使うと構造が伝わりやすくなります。",
+    tags: ["html", "セマンティック", "main"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: 属性の書き方",
+    prompt: "HTML属性の書き方として正しいものはどれですか？",
+    choices: ['class="card"', "class: card", "class(card)", "/class=card"],
+    correctAnswer: 'class="card"',
+    explanation: "HTML属性は属性名=\"値\"の形で開始タグに書きます。",
+    tags: ["html", "属性", "class"]
+  },
+  {
+    language: "html",
+    type: "bug_hunt",
+    title: "HTML: 入れ子の閉じ方",
+    prompt: "次のコードの問題点として正しいものはどれですか？",
+    codeSnippet: "<p><strong>重要</p></strong>",
+    choices: [
+      "内側のstrongを先に閉じる必要がある",
+      "p要素は必ずheadの中に書く",
+      "strong要素には文字を入れられない",
+      "閉じタグはすべて不要"
+    ],
+    correctAnswer: "内側のstrongを先に閉じる必要がある",
+    explanation: "タグを入れ子にした場合は、後から開いたタグを先に閉じます。正しくは <p><strong>重要</strong></p> です。",
+    tags: ["html", "入れ子", "バグ"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: コメント",
+    prompt: "HTMLコメントとして正しい書き方はどれですか？",
+    choices: ["<!-- メモ -->", "// メモ", "# メモ", "/* メモ */"],
+    correctAnswer: "<!-- メモ -->",
+    explanation: "HTMLでは <!-- と --> で囲んだ部分がコメントとして扱われます。",
+    tags: ["html", "コメント"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: テーブルの行とセル",
+    prompt: "表の1行と、その中の通常セルを表すタグの組み合わせとして正しいものはどれですか？",
+    codeSnippet: "<table>\n  <tr>\n    <td>A</td>\n  </tr>\n</table>",
+    choices: ["<tr> と <td>", "<ul> と <li>", "<form> と <label>", "<main> と <section>"],
+    correctAnswer: "<tr> と <td>",
+    explanation: "tr要素は表の行、td要素は通常のセルを表します。",
+    tags: ["html", "テーブル", "tr", "td"]
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML: class属性",
+    prompt: "複数の要素に同じスタイルを当てるための目印としてよく使う属性はどれですか？",
+    choices: ["class", "src", "href", "alt"],
+    correctAnswer: "class",
+    explanation: "class属性はCSSやJavaScriptから要素をまとめて扱うための名前としてよく使います。",
+    tags: ["html", "class", "CSS"]
+  },
+  {
+    language: "html",
+    type: "bug_hunt",
+    title: "HTML: 画像タグのバグ探し",
+    prompt: "次のコードをより適切にするには、何を追加するべきですか？",
+    codeSnippet: '<img src="logo.png">',
+    choices: ["alt属性", "href属性", "action属性", "method属性"],
+    correctAnswer: "alt属性",
+    explanation: "img要素には画像の意味を説明するalt属性を付けると、アクセシビリティと代替表示の面で適切です。",
+    tags: ["html", "画像", "alt", "バグ"]
+  }
+];
+
+const advancedHtmlMissions: MissionSeed[] = [
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML応用: labelとfor",
+    prompt: "label要素とinput要素を正しく関連付けているコードはどれですか？",
+    choices: [
+      '<label for="email">メール</label><input id="email" type="email">',
+      '<label id="email">メール</label><input for="email">',
+      '<label href="email">メール</label><input id="email">',
+      '<input label="email"><label>メール</label>'
+    ],
+    correctAnswer: '<label for="email">メール</label><input id="email" type="email">',
+    explanation: "labelのfor属性とinputのid属性を同じ値にすると、ラベルと入力欄を関連付けられます。",
+    tags: ["html", "フォーム", "label", "アクセシビリティ"],
+    difficulty: "hard"
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML応用: head内メタ情報",
+    prompt: "スマートフォンでも幅を合わせて表示するためにhead内へ書くmetaタグはどれですか？",
+    choices: [
+      '<meta name="viewport" content="width=device-width, initial-scale=1">',
+      '<meta charset="button">',
+      '<meta name="image" content="responsive">',
+      '<meta href="style.css">'
+    ],
+    correctAnswer: '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    explanation: "viewportのmetaタグは、モバイル端末でページ幅や初期表示倍率を適切に扱うために使います。",
+    tags: ["html", "head", "meta", "レスポンシブ"],
+    difficulty: "hard"
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML応用: セマンティック構造",
+    prompt: "記事の見出し、本文、補足情報を意味で分ける構造として最も適切なものはどれですか？",
+    choices: [
+      "<article><h2>見出し</h2><p>本文</p><aside>補足</aside></article>",
+      "<span><h2>見出し</h2><p>本文</p><aside>補足</aside></span>",
+      "<input><h2>見出し</h2><p>本文</p></input>",
+      "<head><h2>見出し</h2><p>本文</p></head>"
+    ],
+    correctAnswer: "<article><h2>見出し</h2><p>本文</p><aside>補足</aside></article>",
+    explanation: "articleは独立した記事、asideは補足情報を表します。意味に合ったタグを使うと構造が読み取りやすくなります。",
+    tags: ["html", "セマンティック", "article", "aside"],
+    difficulty: "hard"
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML応用: レスポンシブ画像",
+    prompt: "画面幅に応じて画像候補をブラウザに選ばせる属性として正しいものはどれですか？",
+    codeSnippet: '<img src="small.jpg" srcset="small.jpg 480w, large.jpg 960w" sizes="100vw" alt="教室">',
+    choices: ["srcset と sizes", "href と target", "action と method", "rowspan と colspan"],
+    correctAnswer: "srcset と sizes",
+    explanation: "srcsetとsizesを使うと、表示条件に応じて適切な画像ファイルをブラウザが選びやすくなります。",
+    tags: ["html", "画像", "レスポンシブ", "srcset"],
+    difficulty: "hard"
+  },
+  {
+    language: "html",
+    type: "concept_check",
+    title: "HTML応用: フォームバリデーション",
+    prompt: "入力必須のメールアドレス欄として最も適切なコードはどれですか？",
+    choices: [
+      '<input type="email" required>',
+      '<input type="text" optional>',
+      '<button type="email" required>',
+      '<form required="email">'
+    ],
+    correctAnswer: '<input type="email" required>',
+    explanation: "type=\"email\" はメール形式の入力欄を表し、required属性で未入力を防ぐ基本的な検証を行えます。",
+    tags: ["html", "フォーム", "バリデーション", "email"],
+    difficulty: "hard"
+  }
+];
+
 const allSeedMissions = [
   ...pythonMissions,
   ...phpMissions,
+  ...htmlMissions,
   ...advancedPythonMissions,
-  ...advancedPhpMissions
+  ...advancedPhpMissions,
+  ...advancedHtmlMissions
 ];
 
 async function upsertMission(seed: MissionSeed) {
@@ -749,6 +1007,12 @@ async function main() {
   );
 
   await upsertQuest(
+    "コーディング基礎ミニ総復習（HTML）",
+    "HTMLの基本構造、見出し、段落、リンク、画像、リスト、フォーム、セマンティックタグ、属性、バグ探しをまとめて復習します。",
+    htmlMissions.map((mission) => mission.title)
+  );
+
+  await upsertQuest(
     "コーディング応用ミニ総復習（Python）",
     "Pythonのリスト、辞書、関数、条件分岐、ループ、文字列、バグ探しを組み合わせて復習します。",
     advancedPythonMissions.map((mission) => mission.title)
@@ -758,6 +1022,12 @@ async function main() {
     "コーディング応用ミニ総復習（PHP）",
     "PHPの配列、連想配列、関数、条件分岐、foreach、型比較、バグ探しを組み合わせて復習します。",
     advancedPhpMissions.map((mission) => mission.title)
+  );
+
+  await upsertQuest(
+    "コーディング応用ミニ総復習（HTML）",
+    "HTMLのフォーム関連付け、head内メタ情報、セマンティック構造、レスポンシブ画像、フォーム検証を組み合わせて復習します。",
+    advancedHtmlMissions.map((mission) => mission.title)
   );
 }
 

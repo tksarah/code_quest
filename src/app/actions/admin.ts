@@ -21,7 +21,7 @@ type MissionType =
   | "bug_hunt"
   | "concept_check";
 type Difficulty = "easy" | "normal" | "hard";
-type MissionLanguage = "python" | "php" | "generic";
+type MissionLanguage = "python" | "php" | "html" | "generic";
 
 function stringValue(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();

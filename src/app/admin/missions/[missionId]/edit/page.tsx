@@ -43,6 +43,7 @@ export default async function EditMissionPage({
             <Select name="language" defaultValue={mission.language}>
               <option value="python">Python</option>
               <option value="php">PHP</option>
+              <option value="html">HTML</option>
               <option value="generic">共通</option>
             </Select>
           </Field>

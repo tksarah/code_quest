@@ -8,11 +8,12 @@ import { prisma } from "@/lib/prisma";
 
 type Difficulty = "easy" | "normal" | "hard";
 type MissionType = "output_prediction";
-type MissionLanguage = "python" | "php" | "generic";
+type MissionLanguage = "python" | "php" | "html" | "generic";
 
 function languageLabel(language: string) {
   if (language === "python") return "Python";
   if (language === "php") return "PHP";
+  if (language === "html") return "HTML";
   return "共通";
 }
 
@@ -41,7 +42,7 @@ export default async function MissionsPage({
     <AdminShell
       active="missions"
       actions={<RpgLink href="/admin/quests">クエスト管理</RpgLink>}
-      description="Python/PHP別に、授業で出す1問ずつの問題を準備します。"
+      description="Python/PHP/HTML別に、授業で出す1問ずつの問題を準備します。"
       title="ミッション"
     >
       <RpgWindow title="Search">
@@ -51,6 +52,7 @@ export default async function MissionsPage({
             <option value="">すべての言語</option>
             <option value="python">Python</option>
             <option value="php">PHP</option>
+            <option value="html">HTML</option>
             <option value="generic">共通</option>
           </Select>
           <Select name="difficulty" defaultValue={difficulty ?? ""}>
@@ -84,6 +86,7 @@ export default async function MissionsPage({
               <Select name="language" defaultValue="python">
                 <option value="python">Python</option>
                 <option value="php">PHP</option>
+                <option value="html">HTML</option>
                 <option value="generic">共通</option>
               </Select>
             </Field>

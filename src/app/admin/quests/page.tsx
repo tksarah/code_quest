@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 function languageLabel(language: string) {
   if (language === "python") return "Python";
   if (language === "php") return "PHP";
+  if (language === "html") return "HTML";
   return "共通";
 }
 
@@ -47,6 +48,7 @@ export default async function QuestsPage({
             <option value="">すべての言語</option>
             <option value="python">Python</option>
             <option value="php">PHP</option>
+            <option value="html">HTML</option>
             <option value="generic">共通</option>
           </Select>
           <RpgButton>絞り込み</RpgButton>
